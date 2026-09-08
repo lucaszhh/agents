@@ -1,0 +1,164 @@
+---
+name: debug-flow
+description: |
+  Debugging sistemático en 4 fases: investigar, analizar, hipotetizar, implementar.
+  Regla de hierro: no se aplica ningún fix sin identificar la causa raíz.
+  Usar con "debuggeá esto", "por qué falla", "investigá el error", "root cause",
+  "arreglá este bug", "antes funcionaba y ahora no".
+---
+
+# Investigar — Debugging con Root Cause
+
+Debugging sistemático para encontrar y arreglar bugs. Cuatro fases secuenciales.
+**Nunca se saltea una fase.** Nunca se arregla sin entender la causa raíz.
+
+## Lectura previa obligatoria
+
+- `AGENTS.md` — patrón de módulos, convenciones del proyecto
+- `README.md` — stack (React Query, zod, react-hook-form, MUI)
+- Estructura de `src/modules/` — identificar el módulo dueño del área del bug
+- Servicios relevantes en `src/modules/<dominio>/services/`
+- Hooks que consumen esos servicios en `src/modules/<dominio>/hooks/`
+- `src/modules/<dominio>/query/keys.ts` — query keys del módulo
+
+## Cuándo usar esta skill
+
+- "debuggeá este error"
+- "por qué falla X"
+- "investigá el bug"
+- "encontrá la causa raíz"
+- "arreglá este comportamiento"
+- "antes funcionaba y ahora no"
+- Errores 500, stack traces, comportamiento inesperado
+- **Siempre usar esta skill para bugs. NUNCA debuggear directo.**
+
+## Cuándo NO usar esta skill
+
+- **Error de diseño/visual** (espaciado, color, tipografía) → `design-audit`
+- **Error de tipos o lint** → `code-health`
+- **Revisar código sin bug concreto** → `code-review`
+- **Planificar una feature nueva** → `architecture-review`
+- **Problema de infraestructura/deploy** → no es debugging de código
+
+---
+
+## Fase 1 — INVESTIGAR
+
+Recolectar toda la información antes de tocar código.
+
+### Pasos
+
+1. **Reproducir el bug** — pasos exactos para triggerearlo
+2. **Capturar el error**:
+   - Mensaje de error completo (sin truncar)
+   - Stack trace completo
+   - Request y response del servicio HTTP (network tab, payload, status code)
+   - Estado del componente al momento del error (props, state, contexto)
+3. **Clasificar el bug**:
+   - ¿Frontend o backend? (si el error viene del servidor, el fix puede estar en backend)
+   - ¿De datos o de UI? (datos incorrectos vs renderizado roto)
+   - ¿Consistente o intermitente? (siempre falla vs a veces)
+4. **Contexto del bug**:
+   - ¿Qué usuario/hora/condición lo triggeró?
+   - ¿Hay pasos previos necesarios?
+   - ¿Se puede reproducir en incógnito / con caché limpia?
+
+### Qué buscar según el stack
+
+- **React Query:** ¿la query está stale? ¿se invalidó correctamente? ¿el `queryFn` está tirando error?
+- **React Hook Form + Zod:** ¿el schema de validación rechaza datos válidos? ¿el error es de zod o del servicio?
+- **Servicios HTTP:** ¿el endpoint es correcto? ¿el payload matchea lo que espera el backend? ¿el status code es el esperado?
+- **Componentes:** ¿condicional de renderizado incorrecto? ¿prop no definida? ¿key duplicada en lista?
+
+---
+
+## Fase 2 — ANALIZAR
+
+Trazar el flujo de datos para aislar dónde se rompe.
+
+### Trazado del flujo
+
+1. **Componente → Hook:** ¿el hook está recibiendo los parámetros correctos? ¿se está llamando?
+2. **Hook → Servicio:** ¿el hook está usando el servicio correcto? ¿los argumentos son los esperados?
+3. **Servicio → HTTP:** ¿la URL, método y payload son correctos? ¿los headers de auth están presentes?
+4. **Respuesta → Hook:** ¿la respuesta tiene la forma que espera el hook? ¿el status code se maneja correctamente?
+5. **Hook → Query Key:** ¿la query key es correcta? ¿staleTime/gcTime están causando datos viejos?
+
+### Puntos críticos a revisar
+
+- **Caché de React Query:** ¿datos stale? ¿la invalidación (`queryClient.invalidateQueries`) se está ejecutando?
+- **Tipos de TypeScript:** ¿hay un `as` o `any` escondiendo un mismatch?
+- **Zod schema:** ¿el schema de validación coincide con lo que manda el backend?
+- **Estados no manejados:** ¿el componente asume que los datos siempre vienen? ¿maneja `undefined`, `null`, array vacío?
+- **Efectos secundarios:** ¿un `useEffect` está disparando en el momento incorrecto?
+
+---
+
+## Fase 3 — HIPOTETIZAR
+
+Formular la causa raíz ANTES de tocar código.
+
+### Cómo formular la hipótesis
+
+1. Escribir la causa raíz en **una oración**:
+   > "El hook `useProcedures` devuelve `undefined` porque el servicio `getProcedures` no maneja el status 204 que el backend retorna cuando la lista está vacía."
+2. **Validar:** ¿esta causa explica TODOS los síntomas observados?
+3. **Si no los explica todos**, hay más de un bug o la hipótesis es incorrecta → volver a Fase 1.
+
+### Regla de hierro
+**No se avanza a Fase 4 sin hipótesis validada.** Si no podés formular la causa en una oración, no entendiste el bug.
+
+---
+
+## Fase 4 — IMPLEMENTAR
+
+Fix mínimo, verificado, sin efectos colaterales.
+
+### Pasos
+
+1. **Fix mínimo** — arreglar solo lo necesario, no refactorizar de paso
+2. **Verificar el fix**:
+   - Reproducir el bug → ya no ocurre
+   - Probar al menos 2 escenarios: happy path + edge case
+3. **Verificar no romper nada**:
+   - Si el fix fue en un hook: revisar todos los componentes que lo consumen
+   - Si el fix fue en un servicio: revisar todos los hooks que lo usan
+   - Si el fix fue en un tipo: revisar todos los lugares donde se usa ese tipo
+4. **Buscar el mismo patrón** — si el bug fue por un error común, revisar si existe en otros hooks/servicios
+
+---
+
+## Reglas de lo que SÍ debe hacer
+
+- Reproducir el bug antes de tocar una sola línea de código
+- Trazar el flujo completo de datos (componente → hook → servicio → query key)
+- Verificar el fix con reproducción negativa (el bug ya no ocurre)
+- Documentar la causa raíz encontrada (una oración)
+- Revisar si el mismo patrón de bug existe en otros lugares del módulo
+- Leer los servicios y hooks relevantes antes de tocar código
+- Verificar el response real del backend (no asumir)
+
+## Reglas de lo que NO debe hacer
+
+- NO aplicar un fix sin haber identificado la causa raíz
+- NO hacer fixes "a ver si funciona" (trial and error)
+- NO modificar código que no está relacionado con el bug (refactors en otro commit)
+- NO ignorar la caché de React Query — es causa frecuente de bugs sutiles
+- NO asumir que el backend devuelve lo que esperás — verificar el response real
+- NO cerrar el bug sin verificar al menos 2 escenarios (happy + edge case)
+- NO usar `as any` o `@ts-ignore` para "arreglar" un error de tipos
+- NO ignorar errores silenciosos (promesas sin catch, try/catch vacíos)
+- NO committear console.log ni código de debug
+- NO hacer refactors en el mismo commit del fix
+
+## Verificación
+
+- Bug reproducido en Fase 1
+- Causa raíz identificada en Fase 3
+- Fix aplicado en Fase 4
+- Bug ya no ocurre
+- No se rompió nada relacionado
+
+## Al terminar
+
+Sugerir al usuario: **code-review** para validar el fix con code review.

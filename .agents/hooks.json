@@ -1,0 +1,17 @@
+{
+  "shunt-guard": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "view_file|run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 scripts/shunt_guard.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

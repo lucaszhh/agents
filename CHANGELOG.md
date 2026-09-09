@@ -5,24 +5,24 @@
 ### Agregadas
 
 **Frontend (6):**
-- architecture-review
-- design-craft
-- design-audit
-- debug-flow
-- code-review
-- code-health
+- nextjs-architect
+- nextjs-design-craft
+- nextjs-design-audit
+- nextjs-debug-flow
+- nextjs-code-review
+- nextjs-code-health
 
 **Backend (3):**
 - nestjs-architect
-- nestjs-backend-developer
+- nestjs-developer
 - nestjs-unit-tester
 
 **Design System (3):**
 - design-token-sync
-- component-extractor
+- component-migrator
 - component-qa
 
 **Generales (3):**
 - generate-changelog
-- generate-gitlab-issue-report
+- generate-pr-report
 - generate-qa-checklist

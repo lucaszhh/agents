@@ -36,8 +36,8 @@ los cambios.
 - **Crear un token nuevo que no está en Figma** → pedirle a diseño que lo agregue
   primero a Figma, esta skill solo sincroniza
 - **Editar el theme de MUI** (`packages/react/src/theme/`) → eso es parte de
-  `component-extractor` o del trabajo directo sobre el package react
-- **Diseñar un componente** → `design-craft`
+  `component-migrator` o del trabajo directo sobre el package react
+- **Diseñar un componente** → `nextjs-design-craft`
 - **Auditar visualmente un componente ya codeado** → `component-qa`
 
 ---
@@ -154,6 +154,6 @@ Detectar:
 ## Al terminar
 
 Si se agregaron tokens nuevos que un componente debería usar, sugerir
-**component-extractor** para migrar el componente con los tokens al día.
+**component-migrator** para migrar el componente con los tokens al día.
 Si ya hay componentes migrados, sugerir **component-qa** para verificar que no
 se rompieron con el cambio de tokens.

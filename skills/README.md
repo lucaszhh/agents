@@ -37,7 +37,7 @@ Cada skill es **un solo `SKILL.md`** con:
 - Una skill = un archivo `SKILL.md`. Nada de scripts, assets ni referencias externas.
 - Español rioplatense, directo.
 - Nombres de skills en inglés, kebab-case, descriptivos, máximo 4 palabras.
-- Referencias entre skills por su `name`, en negrita (`**code-review**`) o `code`.
+- Referencias entre skills por su `name`, en negrita (`**nextjs-code-review**`) o `code`.
 - Las skills NO dependen de gstack ni de MCPs de terceros. Herramientas: comandos
   del repo, git, y MCPs propios del proyecto si están documentados en la skill.
 
@@ -56,8 +56,8 @@ ruta que espera cada harness:
 
 **Ejemplo (OpenCode global):**
 ```bash
-mkdir -p ~/.config/opencode/skills/code-review
-cp skills/front/code-review/SKILL.md ~/.config/opencode/skills/code-review/
+mkdir -p ~/.config/opencode/skills/nextjs-code-review
+cp skills/front/nextjs-code-review/SKILL.md ~/.config/opencode/skills/nextjs-code-review/
 ```
 
 ## Cadenas de skills

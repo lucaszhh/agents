@@ -1,5 +1,5 @@
 ---
-name: nestjs-backend-developer
+name: nestjs-developer
 description: Desarrolla e implementa el código backend para proyectos NestJS. Programación limpia, DI desacoplada, mappers estáticos, patrón Result y especificaciones de empaquetado X-Road.
 ---
 

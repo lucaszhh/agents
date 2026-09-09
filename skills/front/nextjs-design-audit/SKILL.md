@@ -1,5 +1,5 @@
 ---
-name: design-audit
+name: nextjs-nextjs-design-audit
 description: |
   QA visual sobre lo ya codeado. Encuentra inconsistencias de espaciado, jerarquía,
   tipografía, color, responsive y motion. Arregla iterativamente cada issue
@@ -29,15 +29,15 @@ inconsistencias, se arreglan una por una y se re-verifica cada fix.
 - "design polish"
 - "encontrá inconsistencias visuales"
 - "cómo está el responsive"
-- Después de `design-craft`
+- Después de `nextjs-design-craft`
 - Después de cualquier cambio visual
 
 ## Cuándo NO usar esta skill
 
-- **Bug funcional** → `debug-flow`
-- **Diseñar desde cero** → `design-craft`
-- **Revisar lógica/diff** → `code-review`
-- **Cambios que no son de UI** → `code-review`
+- **Bug funcional** → `nextjs-debug-flow`
+- **Diseñar desde cero** → `nextjs-design-craft`
+- **Revisar lógica/diff** → `nextjs-code-review`
+- **Cambios que no son de UI** → `nextjs-code-review`
 
 ---
 
@@ -165,7 +165,7 @@ Prioridad de fixes: CRÍTICO > ALTO > MEDIO > BAJO.
 - NO auditar subjetivamente — usar el design system como referencia objetiva
 - NO revisar solo en desktop — siempre verificar mobile (375px) y tablet (768px)
 - NO revisar solo el happy path — forzar estados de error, vacío y carga
-- NO hacer cambios grandes de diseño — para eso está `design-craft`
+- NO hacer cambios grandes de diseño — para eso está `nextjs-design-craft`
 - NO dejar issues sin fix o sin justificación de por qué no se arreglan
 - NO saltarse la re-verificación después de arreglar
 - NO cambiar la paleta de colores del design system
@@ -183,4 +183,4 @@ Prioridad de fixes: CRÍTICO > ALTO > MEDIO > BAJO.
 
 ## Al terminar
 
-Sugerir al usuario: **code-review** para code review del diff acumulado (los commits de los fixes).
+Sugerir al usuario: **nextjs-code-review** para code review del diff acumulado (los commits de los fixes).

@@ -1,11 +1,11 @@
 ---
-name: generate-gitlab-issue-report
-description: Use esta skill para generar un reporte del issue en formato de descripción de GitLab (issue description) basándose en el diff de la rama actual contra la rama develop. La skill compara con el merge-base (diff three-dot) para evitar que el reporte incluya cambios de otras ramas mergeadas a develop cuando la rama está desactualizada, lee el archivo .gitlab/issue_templates/reporteTemplate.md para armar la estructura, completa las secciones correspondientes y omite el diff de código en bruto en la evidencia. Detecta variables de entorno nuevas (stack-aware: Next.js, LoopBack/Nest, Go, Vite) y las reporta como alerta de máxima prioridad al tope del reporte. El reporte final debe incluir tablas de cambios agrupadas por capa arquitectónica y notas de gaps o advertencias detectadas.
+name: generate-pr-report
+description: Use esta skill para generar un reporte del issue en formato de descripción de Pull Request (GitHub) o Merge Request / Issue (GitLab) basándose en el diff de la rama actual contra la rama develop. La skill compara con el merge-base (diff three-dot) para evitar que el reporte incluya cambios de otras ramas mergeadas a develop cuando la rama está desactualizada, lee el archivo .gitlab/issue_templates/reporteTemplate.md para armar la estructura, completa las secciones correspondientes y omite el diff de código en bruto en la evidencia. Detecta variables de entorno nuevas (stack-aware: Next.js, LoopBack/Nest, Go, Vite) y las reporta como alerta de máxima prioridad al tope del reporte. El reporte final debe incluir tablas de cambios agrupadas por capa arquitectónica y notas de gaps o advertencias detectadas.
 ---
 
-# Generar Reporte de GitLab desde Diff a Develop (Issue Description)
+# Generar Reporte de PR / MR desde Diff a Develop
 
-Esta skill define los pasos que debe seguir el agente para analizar los cambios de código realizados en la rama de funcionalidad actual contra la rama base (`develop`), y estructurar una descripción detallada para el Issue en GitLab siguiendo la plantilla oficial.
+Esta skill define los pasos que debe seguir el agente para analizar los cambios de código realizados en la rama de funcionalidad actual contra la rama base (`develop`), y estructurar una descripción detallada para el Pull Request (GitHub) o Merge Request / Issue (GitLab) siguiendo la plantilla oficial.
 
 ## Cuándo usar esta skill
 - El usuario solicita reportar, documentar o generar la descripción del issue para GitLab sobre los cambios implementados en la rama.

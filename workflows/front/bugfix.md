@@ -32,7 +32,7 @@ Pipeline ágil para investigar la causa raíz de un error en frontend, auditar p
                 │
                 │ 🔨 Aplica cambio mínimo sin efectos colaterales
                 ▼ (Gemini Flash)
-          🔎 @reviewer (code-review + code-health + generate-qa-checklist)
+          🔎 @reviewer (nextjs-code-review + nextjs-code-health + generate-qa-checklist)
                 │
                 │ 📄 Genera: Casos de prueba del fix y regresión
                 ▼ ⏸️ [COMPUERTA 2: VALIDACIÓN DE QA Y TESTING]
@@ -44,7 +44,7 @@ Pipeline ágil para investigar la causa raíz de un error en frontend, auditar p
 
 ### Etapa 1: Diagnóstico de Causa Raíz y Auditoría de Gaps
 - **Responsable**: `@debugger`
-- **Skill a invocar**: **`debug-flow`**
+- **Skill a invocar**: **`nextjs-debug-flow`**
 - **Regla de Shunting**: No leer archivos de más de 350 líneas completos. Usar el grafo semántico disponible (`codebase-memory-mcp` o `graphify query` si existe `graphify-out/`), o lecturas quirúrgicas (`StartLine`/`EndLine`).
 - **Acciones**:
   1. Aislar y reproducir el bug a partir de la traza de error, payload o pasos del usuario.
@@ -73,11 +73,11 @@ Pipeline ágil para investigar la causa raíz de un error en frontend, auditar p
 
 ### Etapa 3: Verificación, Code Review y QA (Direct-to-Disk Writing)
 - **Responsable**: `@reviewer`
-- **Skills a invocar**: **`code-review`** + **`code-health`** + **`generate-qa-checklist`**
+- **Skills a invocar**: **`nextjs-code-review`** + **`nextjs-code-health`** + **`generate-qa-checklist`**
 - **Regla Direct-to-Disk**: `qa_checklist.md` se escribe directo en disco. Solo se reportan métricas de flujos y casos en el chat sin imprimir tablas exhaustivas.
 - **Acciones**:
-  1. Ejecutar **`code-health`** (`pnpm run lint` y `tsc --noEmit`).
-  2. Ejecutar **`code-review`** sobre el diff para verificar que no haya regresiones ni variables no utilizadas.
+  1. Ejecutar **`nextjs-code-health`** (`pnpm run lint` y `tsc --noEmit`).
+  2. Ejecutar **`nextjs-code-review`** sobre el diff para verificar que no haya regresiones ni variables no utilizadas.
   3. Ejecutar **`generate-qa-checklist`** (escribe directo a disco `qa_checklist.md`).
   4. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de verificación y la matriz de pruebas, esperando su interacción.
   5. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar cualquier archivo temporal (`qa_checklist.md`, logs o reportes transitorios) para mantener el workspace de Git completamente limpio.

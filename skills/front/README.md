@@ -7,12 +7,12 @@ react-hook-form, módulos por dominio, design system propio).
 
 | Skill | Para qué | Invocar con |
 |---|---|---|
-| `architecture-review` | Planear arquitectura antes de codear | "revisá la arquitectura", "planificá la feature" |
-| `design-craft` | Diseñar/rediseñar UI con craft | "diseñá este componente", "rediseñá la landing" |
-| `design-audit` | QA visual sobre lo codeado | "auditá el diseño", "visual QA" |
-| `debug-flow` | Debuggear con root cause | "debuggeá este error", "por qué falla" |
-| `code-review` | Code review del diff pre-merge | "revisá el diff", "code review" |
-| `code-health` | Dashboard de calidad (lint, tipos) | "health check", "cómo está el código" |
+| `nextjs-architect` | Planear arquitectura antes de codear | "revisá la arquitectura", "planificá la feature" |
+| `nextjs-design-craft` | Diseñar/rediseñar UI con craft | "diseñá este componente", "rediseñá la landing" |
+| `nextjs-design-audit` | QA visual sobre lo codeado | "auditá el diseño", "visual QA" |
+| `nextjs-debug-flow` | Debuggear con root cause | "debuggeá este error", "por qué falla" |
+| `nextjs-code-review` | Code review del diff pre-merge | "revisá el diff", "code review" |
+| `nextjs-code-health` | Dashboard de calidad (lint, tipos) | "health check", "cómo está el código" |
 
 ## Patrones de arquitectura
 
@@ -43,12 +43,12 @@ Cada skill al terminar **siempre** sugiere la siguiente de la cadena correspondi
 
 ### Feature nueva ([`workflows/front/feature.md`](../../workflows/front/feature.md))
 ```
-@explorer (Figma/Context) → @architect (architecture-review → design-craft) → 🛑 Pausa Humana → @coder [codeás] → @reviewer (design-audit → code-review → code-health → generate-qa-checklist)
+@explorer (Figma/Context) → @architect (nextjs-architect → nextjs-design-craft) → 🛑 Pausa Humana → @coder [codeás] → @reviewer (nextjs-design-audit → nextjs-code-review → nextjs-code-health → generate-qa-checklist)
 ```
 
 ### Bug fix ([`workflows/front/bugfix.md`](../../workflows/front/bugfix.md))
 ```
-@debugger (debug-flow) → @coder [arreglás] → @reviewer (code-review → code-health → generate-qa-checklist)
+@debugger (nextjs-debug-flow) → @coder [arreglás] → @reviewer (nextjs-code-review → nextjs-code-health → generate-qa-checklist)
 ```
 
 

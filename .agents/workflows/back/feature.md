@@ -36,7 +36,7 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
                    │
                    │ 🔨 Implementa: domain/ + data/ + presentation/ + Migración
                    ▼ (Gemini Flash / Sonnet)
-             🔎 @reviewer (nestjs-unit-tester + code-review + Jest OK)
+             🔎 @reviewer (nestjs-unit-tester + nextjs-code-review + Jest OK)
                    │
                    │ 📄 Genera: *.spec.ts + Matriz de QA Checklist
                    ▼ ⏸️ [COMPUERTA 2: VALIDACIÓN DE TESTS Y QA]
@@ -102,7 +102,7 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
 
 ### Etapa 4: Unit Testing y QA de Integración (Direct-to-Disk Writing)
 - **Responsable**: `@reviewer` (Modelo tester/auditor: Gemini Flash / Sonnet)
-- **Skills a invocar**: **`nestjs-unit-tester`** + **`code-review`** + **`generate-qa-checklist`**
+- **Skills a invocar**: **`nestjs-unit-tester`** + **`nextjs-code-review`** + **`generate-qa-checklist`**
 - **Regla Direct-to-Disk**:
   - Los archivos `*.spec.ts` y `qa_checklist.md` se escriben **directamente a disco** (`write_to_file`).
   - Prohibido volcar el código fuente de los tests o tablas completas de QA en el chat.
@@ -111,7 +111,7 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
   1. Escribir pruebas unitarias `*.spec.ts` para controladores, servicios y repositorios usando Jest y `TestingModule` directamente a disco.
   2. Aplicar el patrón AAA (Arrange-Act-Assert) y testear tanto el camino feliz como los casos de fallo del patrón `Result`.
   3. Ejecutar la suite de tests (`npm test` o `pnpm test`) y verificar que todos pasen con cobertura adecuada.
-  4. Ejecutar `code-review` sobre el diff contra `develop`.
+  4. Ejecutar `nextjs-code-review` sobre el diff contra `develop`.
   5. Ejecutar `generate-qa-checklist` (escribe directo a disco `qa_checklist.md`).
   6. **Compuerta de Validación de Tests y QA**: Presentar al desarrollador el reporte sintético de ejecución de tests y la matriz de pruebas de QA, esperando su interacción.
   7. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria todos los archivos temporales generados en el ciclo (`docs/back_context_<feature>.md`, `docs/back_plan_<feature>.md`, `qa_checklist.md`, logs transitorios) para dejar el árbol de Git (`git status`) 100% limpio.

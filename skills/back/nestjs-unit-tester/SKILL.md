@@ -19,12 +19,12 @@ Diseña, estructura e implementa pruebas unitarias (`*.spec.ts`) para controlado
 - "testear el controlador de X"
 - "agregá coverage para esta feature"
 - "depurá este test que falla"
-- Después de `nestjs-backend-developer` haya implementado el código
+- Después de `nestjs-developer` haya implementado el código
 
 ## Cuándo NO usar esta skill
 
 - **Diseñar la arquitectura** → `nestjs-architect`
-- **Implementar código** → `nestjs-backend-developer`
+- **Implementar código** → `nestjs-developer`
 - **Corregir bugs de producción** → buscar la causa directamente
 
 ---
@@ -161,4 +161,4 @@ Para optimizar el consumo de tokens y no saturar la ventana de contexto:
 
 ## Al terminar
 
-Reportar coverage, métricas y tests que fallaron (sin imprimir el código fuente). Si hay tests rotos, sugerir **nestjs-backend-developer** para corregir el código.
+Reportar coverage, métricas y tests que fallaron (sin imprimir el código fuente). Si hay tests rotos, sugerir **nestjs-developer** para corregir el código.

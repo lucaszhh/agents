@@ -1,5 +1,5 @@
 ---
-name: component-extractor
+name: component-migrator
 description: |
   Migrar un componente del design system legacy (frontend-nextjs) al monorepo
   de design-system. Lee la implementación original, la adapta a MUI sobre el
@@ -34,11 +34,11 @@ exporta desde el barrel y tiene su story en `apps/docs/src/stories/`.
 
 ## Cuándo NO usar esta skill
 
-- **Diseñar un componente nuevo desde cero** (no existe en el legacy) → `design-craft`
+- **Diseñar un componente nuevo desde cero** (no existe en el legacy) → `nextjs-design-craft`
 - **Solo actualizar tokens** → `design-token-sync`
 - **Auditar un componente ya migrado** → `component-qa`
-- **Debuggear un bug en la migración** → `debug-flow`
-- **Planificar una migración grande (>5 componentes)** → `architecture-review` primero
+- **Debuggear un bug en la migración** → `nextjs-debug-flow`
+- **Planificar una migración grande (>5 componentes)** → `nextjs-architect` primero
 
 ---
 
@@ -121,4 +121,4 @@ exporta desde el barrel y tiene su story en `apps/docs/src/stories/`.
 
 Sugerir al usuario: **component-qa** para auditar el componente migrado
 (calidad, variantes cubiertas, a11y, comparación con Figma).
-Después de QA, la cadena continúa con **code-review** sobre el diff.
+Después de QA, la cadena continúa con **nextjs-code-review** sobre el diff.

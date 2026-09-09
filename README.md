@@ -8,10 +8,10 @@ Las skills viven en `skills/`, organizadas por dominio:
 
 | Carpeta | Para qué | Skills |
 |---|---|---|
-| `skills/front/` | Desarrollo frontend (Next.js, React Query, design system) | architecture-review, design-craft, design-audit, debug-flow, code-review, code-health |
-| `skills/back/` | Desarrollo backend (NestJS, Clean Architecture, X-Road) | nestjs-architect, nestjs-backend-developer, nestjs-unit-tester |
-| `skills/design-system/` | Monorepo design-system (tokens, componentes, QA) | design-token-sync, component-extractor, component-qa |
-| `skills/generales/` | Tareas transversales | generate-changelog, generate-gitlab-issue-report, generate-qa-checklist |
+| `skills/front/` | Desarrollo frontend (Next.js, React Query, design system) | nextjs-architect, nextjs-design-craft, nextjs-design-audit, nextjs-debug-flow, nextjs-code-review, nextjs-code-health |
+| `skills/back/` | Desarrollo backend (NestJS, Clean Architecture, X-Road) | nestjs-architect, nestjs-developer, nestjs-unit-tester |
+| `skills/design-system/` | Monorepo design-system (tokens, componentes, QA) | design-token-sync, component-migrator, component-qa |
+| `skills/generales/` | Tareas transversales | generate-changelog, generate-pr-report, generate-qa-checklist |
 
 Cada skill es un `SKILL.md` autocontenido en español. Ver `skills/README.md`
 para el formato, las cadenas de flujos y las instrucciones de instalación por harness.
@@ -32,6 +32,8 @@ Antigravity soporta dos ubicaciones principales para las skills:
 **Ejemplo para instalar una skill de forma Global:**
 
 ```bash
+mkdir -p ~/.gemini/config/skills/nextjs-architect
+cp skills/front/nextjs-architect/SKILL.md ~/.gemini/config/skills/nextjs-architect/
 ```
 
 _(Antigravity las detectará automáticamente de forma transparente)._
@@ -48,6 +50,8 @@ OpenCode sigue un esquema de carpetas muy similar:
 **Ejemplo para instalar una skill de forma Global:**
 
 ```bash
+mkdir -p ~/.config/opencode/skills/nextjs-architect
+cp skills/front/nextjs-architect/SKILL.md ~/.config/opencode/skills/nextjs-architect/
 ```
 
 ### ⚡ Instalación universal
@@ -60,34 +64,34 @@ npx skills add <repo>
 
 ### Frontend (`skills/front/`)
 
-- **`architecture-review`**: Planear arquitectura antes de codear.
-- **`design-craft`**: Diseñar/rediseñar UI con craft.
-- **`design-audit`**: QA visual sobre lo codeado.
-- **`debug-flow`**: Debugging con root cause.
-- **`code-review`**: Code review del diff pre-merge.
-- **`code-health`**: Dashboard de calidad (lint, tipos).
+- **`nextjs-architect`**: Planear arquitectura antes de codear.
+- **`nextjs-design-craft`**: Diseñar/rediseñar UI con craft.
+- **`nextjs-design-audit`**: QA visual sobre lo codeado.
+- **`nextjs-debug-flow`**: Debugging con root cause.
+- **`nextjs-code-review`**: Code review del diff pre-merge.
+- **`nextjs-code-health`**: Dashboard de calidad (lint, tipos).
 
 ### Backend (`skills/back/`)
 
 - **`nestjs-architect`**: Diseñar la estructura de un módulo NestJS.
-- **`nestjs-backend-developer`**: Implementar controladores, servicios, DTOs.
+- **`nestjs-developer`**: Implementar controladores, servicios, DTOs.
 - **`nestjs-unit-tester`**: Escribir pruebas unitarias con Jest.
 
 ### Design System (`skills/design-system/`)
 
 - **`design-token-sync`**: Sincronizar tokens desde Figma.
-- **`component-extractor`**: Migrar un componente del legacy al DS.
+- **`component-migrator`**: Migrar un componente del legacy al DS.
 - **`component-qa`**: QA de un componente del DS.
 
 ### Generales (`skills/generales/`)
 
 - **`generate-changelog`**: Genera o actualiza el archivo CHANGELOG.md basado en notas de release.
-- **`generate-gitlab-issue-report`**: Genera un reporte de issue para GitLab basado en las diferencias con la rama develop.
+- **`generate-pr-report`**: Genera un reporte detallado para PRs (GitHub) o MRs/Issues (GitLab) basado en el diff three-dot.
 - **`generate-qa-checklist`**: Genera checklists de pruebas para QA basados en los flujos afectados.
 
 ## 🔄 Pipelines y Workflows (`workflows/`)
 
-Los workflows coEnterprise Engineeringn múltiples skills asignando roles de subagentes con modelos optimizados:
+Los workflows conectan múltiples skills asignando roles de subagentes con modelos optimizados:
 
 ### Frontend ([`workflows/front/`](workflows/front/))
 | Workflow | Propósito | Roles / Modelos |

@@ -8,7 +8,7 @@ tokens, componentes de `@design-system/react`, íconos y Storybook.
 | Skill | Para qué | Invocar con |
 |---|---|---|
 | `design-token-sync` | Sincronizar tokens desde Figma (o JSON exportado) | "sincronizá los tokens", "cambió un color en Figma" |
-| `component-extractor` | Migrar un componente del legacy al DS | "migrá este componente", "traé el Button al DS" |
+| `component-migrator` | Migrar un componente del legacy al DS | "migrá este componente", "traé el Button al DS" |
 | `component-qa` | QA de un componente del DS (build, tokens, variantes, a11y) | "hacé QA del componente", "validá el Button" |
 
 ## Estructura del monorepo
@@ -37,7 +37,7 @@ Las cadenas de desarrollo del Design System pueden ejecutarse de forma automatiz
 
 ### Migración de Componente Legacy ([`workflows/design-system/component-migration.md`](../../workflows/design-system/component-migration.md))
 ```
-@explorer (Legacy Scout) → @architect (component-extractor) → 🛑 Pausa Humana → @coder [crea componente + story] → @reviewer (component-qa + code-review)
+@explorer (Legacy Scout) → @architect (component-migrator) → 🛑 Pausa Humana → @coder [crea componente + story] → @reviewer (component-qa + nextjs-code-review)
 ```
 
 ### Sincronización de Tokens ([`workflows/design-system/token-sync.md`](../../workflows/design-system/token-sync.md))
@@ -47,13 +47,13 @@ Las cadenas de desarrollo del Design System pueden ejecutarse de forma automatiz
 
 ### Componente Nuevo desde Figma ([`workflows/design-system/component-new.md`](../../workflows/design-system/component-new.md))
 ```
-@explorer (Figma Scout) → @architect (design-craft) → 🛑 Pausa Humana → @coder [implementación + story] → @reviewer (component-qa)
+@explorer (Figma Scout) → @architect (nextjs-design-craft) → 🛑 Pausa Humana → @coder [implementación + story] → @reviewer (component-qa)
 ```
 
 
 
-**Skills compartidas:** `code-review` y `code-health` viven en
-`front/` pero se usan también en este flujo. `debug-flow` para bugs del DS.
+**Skills compartidas:** `nextjs-code-review` y `nextjs-code-health` viven en
+`front/` pero se usan también en este flujo. `nextjs-debug-flow` para bugs del DS.
 
 **Nota sobre Figma:** `design-token-sync` documenta cómo configurar el MCP de
 Figma (oficial para Claude, libre para OpenCode) pero **no depende de él** — si

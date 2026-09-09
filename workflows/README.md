@@ -1,6 +1,6 @@
 # Workflows — Pipelines de Subagentes (Enterprise)
 
-Esta carpeta contiene los **Workflows** de desarrollo de Enterprise Production Platform organizados por dominio. Un workflow es una guía de orquestación paso a paso que coEnterprise Engineering múltiples **Skills** y asigna roles de **Subagentes** con perfiles de modelos de IA optimizados para cada etapa.
+Esta carpeta contiene los **Workflows** de desarrollo de Enterprise Production Platform organizados por dominio. Un workflow es una guía de orquestación paso a paso que coEnterprise Architecture múltiples **Skills** y asigna roles de **Subagentes** con perfiles de modelos de IA optimizados para cada etapa.
 
 ---
 

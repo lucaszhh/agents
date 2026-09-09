@@ -29,16 +29,16 @@ y reporta issues con severidad para que se corrijan.
 - "validá el componente migrado"
 - "está completo este componente?"
 - "chequeá si el Button usa bien los tokens"
-- Después de `component-extractor`
+- Después de `component-migrator`
 - Después de cambios en el theme que puedan afectar componentes
 - Antes de publicar una versión del DS
 
 ## Cuándo NO usar esta skill
 
-- **Componente todavía sin migrar** → `component-extractor`
-- **Bug funcional (crash, runtime)** → `debug-flow`
-- **Revisar el diff de una feature** → `code-review`
-- **Diseñar variantes nuevas** → `design-craft`
+- **Componente todavía sin migrar** → `component-migrator`
+- **Bug funcional (crash, runtime)** → `nextjs-debug-flow`
+- **Revisar el diff de una feature** → `nextjs-code-review`
+- **Diseñar variantes nuevas** → `nextjs-design-craft`
 - **Solo build del monorepo** → correr `pnpm build` directo
 
 ---
@@ -131,7 +131,7 @@ fix sugerido.
 
 ## Al terminar
 
-Si el score es ≥ 11: sugerir **code-review** sobre el diff del componente
+Si el score es ≥ 11: sugerir **nextjs-code-review** sobre el diff del componente
 para validar estructura y convenciones antes de mergear.
-Si hay issues: sugerir **debug-flow** si es un bug funcional, o arreglar los
+Si hay issues: sugerir **nextjs-debug-flow** si es un bug funcional, o arreglar los
 issues de tokens con `design-token-sync` y volver a correr este QA.

@@ -1,5 +1,5 @@
 ---
-name: code-review
+name: nextjs-nextjs-code-review
 description: |
   Code review del diff contra la branch base. Analiza estructura, convenciones,
   estados de UI, tipos y seguridad. Cada hallazgo clasificado por severidad
@@ -26,15 +26,15 @@ los tests no atrapan. Cada hallazgo con severidad, línea específica y fix suge
 - "checkeá mis cambios antes de mergear"
 - "revisame este PR"
 - Antes de cualquier merge
-- Después de `debug-flow` (fix de bug)
-- Después de `design-audit` (cambios visuales)
+- Después de `nextjs-debug-flow` (fix de bug)
+- Después de `nextjs-design-audit` (cambios visuales)
 
 ## Cuándo NO usar esta skill
 
-- **Bug sin arreglar** → primero `debug-flow`, después `code-review`
-- **Cambios solo visuales sin revisar diseño** → primero `design-audit`
+- **Bug sin arreglar** → primero `nextjs-debug-flow`, después `nextjs-code-review`
+- **Cambios solo visuales sin revisar diseño** → primero `nextjs-design-audit`
 - **Menos de 5 líneas de cambio trivial** → opcional, se puede skipear
-- **Planificar una feature** → `architecture-review`
+- **Planificar una feature** → `nextjs-architect`
 
 ---
 
@@ -161,7 +161,7 @@ Para cada componente nuevo o modificado que renderiza datos:
 
 - NO aprobar si hay lógica de negocio en `src/app/`
 - NO aprobar si hay imports de `@mui/*` fuera del design system (`@desingSystem/*` / `src/modules/desingSystem/`)
-- NO hacer review de espaciado/colores/visual — eso es `design-audit`
+- NO hacer review de espaciado/colores/visual — eso es `nextjs-design-audit`
 - NO sugerir reescribir todo si el cambio es funcionalmente correcto
 - NO dejar pasar `any` sin justificación
 - NO aprobar código que no maneja estados de error
@@ -172,4 +172,4 @@ Para cada componente nuevo o modificado que renderiza datos:
 
 ## Al terminar
 
-Sugerir al usuario: **code-health** para correr lint y typecheck, y verificar score de calidad.
+Sugerir al usuario: **nextjs-code-health** para correr lint y typecheck, y verificar score de calidad.

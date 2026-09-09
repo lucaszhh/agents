@@ -29,7 +29,7 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
            │
            │ 📄 Genera: docs/context_<feature>.md (transitorio)
            ▼ (Claude Sonnet / Gemini Pro)
-      📐 @architect (Tech Lead — architecture-review + design-craft + Gaps Audit)
+      📐 @architect (Tech Lead — nextjs-architect + nextjs-design-craft + Gaps Audit)
            │
            │ 📄 Genera: docs/plan_<feature>.md (con sección Oportunidades y Gaps)
            ▼ ⏸️ [COMPUERTA 1: APROBACIÓN DE ARQUITECTURA Y DECISIÓN DE GAPS]
@@ -38,7 +38,7 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
            │
            │ 🔨 Escribe componentes, hooks, services, domain
            ▼ (Gemini Flash / Sonnet)
-      🔎 @reviewer (QA Visual & Code Health — design-audit + code-review + code-health)
+      🔎 @reviewer (QA Visual & Code Health — nextjs-design-audit + nextjs-code-review + nextjs-code-health)
            │
            │ 📄 Genera: Matriz de QA (Happy path, Edge cases, Negativos, Regresión)
            ▼ ⏸️ [COMPUERTA 2: VALIDACIÓN DE QA Y TESTING]
@@ -66,7 +66,7 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
 
 ### Etapa 2: Revisión de Arquitectura, Craft y Auditoría de Gaps
 - **Responsable**: `@architect` (Modelo de razonamiento: Claude Sonnet / Gemini Pro)
-- **Skills a invocar**: **`architecture-review`** + **`design-craft`**
+- **Skills a invocar**: **`nextjs-architect`** + **`nextjs-design-craft`**
 - **Lectura previa obligatoria**: `docs/context_<feature>.md`, `AGENTS.md`, `package.json`.
 - **Acciones**:
   1. Diseñar la estructura de carpetas en `src/modules/<dominio>/`:
@@ -109,12 +109,12 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
 
 ### Etapa 4: Auditoría, Code Review y QA (Direct-to-Disk Writing)
 - **Responsable**: `@reviewer` (Modelo auditor: Gemini Flash / Claude Sonnet)
-- **Skills a invocar**: **`design-audit`** + **`code-review`** + **`code-health`** + **`generate-qa-checklist`**
+- **Skills a invocar**: **`nextjs-design-audit`** + **`nextjs-code-review`** + **`nextjs-code-health`** + **`generate-qa-checklist`**
 - **Regla Direct-to-Disk**: La matriz de QA se escribe directamente en `qa_checklist.md`. `@reviewer` solo presenta en el chat un reporte sintético con métricas de cobertura y resumen de flujos, sin imprimir tablas exhaustivas.
 - **Acciones**:
-  1. Ejecutar **`code-health`** (`pnpm run lint` y validación de tipos `tsc --noEmit`).
-  2. Ejecutar **`design-audit`** para verificar consistencia visual, paddings, jerarquía tipográfica y tokens.
-  3. Ejecutar **`code-review`** sobre el diff pre-merge contra `develop`.
+  1. Ejecutar **`nextjs-code-health`** (`pnpm run lint` y validación de tipos `tsc --noEmit`).
+  2. Ejecutar **`nextjs-design-audit`** para verificar consistencia visual, paddings, jerarquía tipográfica y tokens.
+  3. Ejecutar **`nextjs-code-review`** sobre el diff pre-merge contra `develop`.
   4. Ejecutar **`generate-qa-checklist`** (escribe directo a disco `qa_checklist.md`).
   5. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de verificación y métricas de testing, esperando su interacción.
   6. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria todos los archivos temporales generados en el ciclo (`docs/context_<feature>.md`, `docs/plan_<feature>.md`, `qa_checklist.md`, reportes locales) para dejar el árbol de Git (`git status`) 100% limpio.

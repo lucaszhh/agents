@@ -28,7 +28,7 @@ Pipeline para diseñar, implementar y documentar un componente nuevo en `@design
                    │
                    │ 📄 Genera: docs/ds_new_<component>_spec.md (transitorio)
                    ▼ (Claude Sonnet / Gemini Pro)
-             📐 @architect (Craft Architect — design-craft + Gaps Audit)
+             📐 @architect (Craft Architect — nextjs-design-craft + Gaps Audit)
                    │
                    │ 📄 Genera: docs/ds_plan_<component>.md (con Oportunidades y Gaps)
                    ▼ ⏸️ [COMPUERTA 1: APROBACIÓN DE API CONTRACT Y GAPS]
@@ -59,7 +59,7 @@ Pipeline para diseñar, implementar y documentar un componente nuevo en `@design
 
 ### Etapa 2: Arquitectura del Componente, Craft y Auditoría de Gaps
 - **Responsable**: `@architect`
-- **Skills a invocar**: **`design-craft`** + **`architecture-review`**
+- **Skills a invocar**: **`nextjs-design-craft`** + **`nextjs-architect`**
 - **Acciones**:
   1. Definir la jerarquía de props (`<Nombre>Props`), slots y eventos.
   2. Diseñar el wrapper sobre MUI con el theme propio.
@@ -92,11 +92,11 @@ Pipeline para diseñar, implementar y documentar un componente nuevo en `@design
 
 ### Etapa 4: QA, Accesibilidad y Build
 - **Responsable**: `@reviewer`
-- **Skill a invocar**: **`component-qa`** + **`code-review`**
+- **Skill a invocar**: **`component-qa`** + **`nextjs-code-review`**
 - **Acciones**:
   1. Ejecutar `pnpm build:react` y asegurar compilación limpia.
   2. Verificar estándares a11y (ARIA, contraste, navegación por teclado, focus rings).
-  3. Ejecutar `code-review` sobre el diff.
+  3. Ejecutar `nextjs-code-review` sobre el diff.
   4. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de QA del componente, verificación de accesibilidad y cobertura de Storybook, esperando su interacción.
   5. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria los archivos temporales (`docs/ds_new_<component>_spec.md`, `docs/ds_plan_<component>.md`, reportes locales) para mantener el repositorio 100% limpio.
 - **Salida**: Componente validado, Storybook verificado, reporte sintético y workspace limpio de temporales.

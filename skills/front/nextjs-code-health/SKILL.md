@@ -1,5 +1,5 @@
 ---
-name: code-health
+name: nextjs-nextjs-code-health
 description: |
   Dashboard de calidad de código. Ejecuta linter y type checker del proyecto,
   analiza estructura de módulos y detecta deuda técnica. Computa un score
@@ -32,8 +32,8 @@ Detecta automáticamente los scripts disponibles en `package.json`.
 ## Cuándo NO usar esta skill
 
 - **Solo correr lint** → ejecutar `pnpm run lint` directo, no hace falta la skill
-- **Debuggear un bug** → `debug-flow`
-- **Revisar un diff específico** → `code-review`
+- **Debuggear un bug** → `nextjs-debug-flow`
+- **Revisar un diff específico** → `nextjs-code-review`
 
 ---
 
@@ -250,6 +250,6 @@ Si existe historial previo (últimas 10 entradas):
 
 Mostrar score final con breakdown por categoría y tendencia (si hay historial).
 Si el score es < 6, sugerir fixes concretos por prioridad y recomendar volver a correr
-`code-review` después de los arreglos.
+`nextjs-code-review` después de los arreglos.
 
-No hay siguiente skill obligatoria — `code-health` es el final de la cadena.
+No hay siguiente skill obligatoria — `nextjs-code-health` es el final de la cadena.

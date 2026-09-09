@@ -28,7 +28,7 @@ Pipeline estandarizado para portar componentes desde el frontend legacy (`fronte
                  │
                  │ 📄 Genera: docs/ds_migration_<component>.md (transitorio)
                  ▼ (Claude Sonnet / Gemini Pro)
-           📐 @architect (Theme Architect — component-extractor + Gaps Audit)
+           📐 @architect (Theme Architect — component-migrator + Gaps Audit)
                  │
                  │ 📄 Genera: docs/ds_plan_<component>.md (API Contract + Gaps)
                  ▼ ⏸️ [COMPUERTA 1: APROBACIÓN DE MIGRACIÓN Y GAPS]
@@ -62,7 +62,7 @@ Pipeline estandarizado para portar componentes desde el frontend legacy (`fronte
 
 ### Etapa 2: Diseño de API, Theme Augmentation y Auditoría de Gaps
 - **Responsable**: `@architect` (Modelo de razonamiento: Claude Sonnet / Gemini Pro)
-- **Skill a invocar**: **`component-extractor`**
+- **Skill a invocar**: **`component-migrator`**
 - **Lectura previa obligatoria**: `docs/ds_migration_<component>.md`, `AGENTS.md` y `DESIGN.md` de `design-system`.
 - **Acciones**:
   1. Diseñar el wrapper sobre MUI o compound component en `packages/react/src/components/<Nombre>/`.
@@ -101,11 +101,11 @@ Pipeline estandarizado para portar componentes desde el frontend legacy (`fronte
 
 ### Etapa 4: QA de Componente, Paridad y Build (Direct-to-Disk Writing)
 - **Responsable**: `@reviewer` (Modelo auditor: Gemini Flash / Sonnet)
-- **Skill a invocar**: **`component-qa`** + **`code-review`**
+- **Skill a invocar**: **`component-qa`** + **`nextjs-code-review`**
 - **Acciones**:
   1. Ejecutar `pnpm build:react` en `design-system/` para garantizar compilación y tipos limpios.
   2. Auditar checklist de `component-qa`: uso estricto de tokens, a11y (labels, contrast, focus rings), cobertura de variantes.
-  3. Ejecutar `code-review` sobre el diff pre-merge para verificar paridad funcional con el componente legacy.
+  3. Ejecutar `nextjs-code-review` sobre el diff pre-merge para verificar paridad funcional con el componente legacy.
   4. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de QA, estado de Storybook y paridad de props, esperando su interacción.
   5. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria los archivos temporales (`docs/ds_migration_<component>.md`, `docs/ds_plan_<component>.md`, reportes locales) para mantener el repositorio 100% limpio.
 - **Salida**: Componente migrado, build exitoso, reporte sintético de paridad y workspace limpio de temporales.

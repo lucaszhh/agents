@@ -8,8 +8,8 @@ Workflows de orquestación de subagentes para el desarrollo de frontend en Enter
 
 | Workflow | Para qué sirve | Roles involucrados | Skills que orquesta |
 |---|---|---|---|
-| [`feature.md`](./feature.md) | Desarrollo completo de una feature desde Figma hasta QA | `@explorer`, `@architect`, `@coder`, `@reviewer` | `architecture-review`, `design-craft`, `design-audit`, `code-review`, `code-health`, `generate-qa-checklist` |
-| [`bugfix.md`](./bugfix.md) | Diagnóstico root-cause y corrección quirúrgica de bugs | `@debugger`, `@coder`, `@reviewer` | `debug-flow`, `code-review`, `code-health`, `generate-qa-checklist` |
+| [`feature.md`](./feature.md) | Desarrollo completo de una feature desde Figma hasta QA | `@explorer`, `@architect`, `@coder`, `@reviewer` | `nextjs-architect`, `nextjs-design-craft`, `nextjs-design-audit`, `nextjs-code-review`, `nextjs-code-health`, `generate-qa-checklist` |
+| [`bugfix.md`](./bugfix.md) | Diagnóstico root-cause y corrección quirúrgica de bugs | `@debugger`, `@coder`, `@reviewer` | `nextjs-debug-flow`, `nextjs-code-review`, `nextjs-code-health`, `generate-qa-checklist` |
 
 ---
 
@@ -17,11 +17,11 @@ Workflows de orquestación de subagentes para el desarrollo de frontend en Enter
 
 ### Feature Nueva (`feature.md`)
 ```
-@explorer (Figma/Context) → @architect (architecture-review → design-craft) → 🛑 Pausa Humana → @coder [codeás] → @reviewer (design-audit → code-review → code-health → generate-qa-checklist)
+@explorer (Figma/Context) → @architect (nextjs-architect → nextjs-design-craft) → 🛑 Pausa Humana → @coder [codeás] → @reviewer (nextjs-design-audit → nextjs-code-review → nextjs-code-health → generate-qa-checklist)
 ```
 
 ### Bugfix (`bugfix.md`)
 ```
-@debugger (debug-flow) → @coder [arreglás] → @reviewer (code-review → code-health → generate-qa-checklist)
+@debugger (nextjs-debug-flow) → @coder [arreglás] → @reviewer (nextjs-code-review → nextjs-code-health → generate-qa-checklist)
 ```
 

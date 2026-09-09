@@ -1,7 +1,7 @@
 # 📌 Feat: Pipelines de Workflows de Subagentes, Shunting Guard y Templates de GitLab
 
 ## 📝 Descripción
-Se implementó de manera integral la infraestructura de orquestación de subagentes para Enterprise Production Platform, coEnterprise Engineeringndo las Agent Skills del repositorio en pipelines estandarizados por dominio funcional (**Frontend**, **Backend** y **Design System**). 
+Se implementó de manera integral la infraestructura de orquestación de subagentes para Enterprise Production Platform, conectando las Agent Skills del repositorio en pipelines estandarizados por dominio funcional (**Frontend**, **Backend** y **Design System**). 
 
 Adicionalmente, se incorporó una arquitectura determinista de **Shunting Guard** (vía Lifecycle Hooks `PreToolUse`), ingesta sintética (*bulk-reader* con límite estricto < 150 líneas) y el protocolo de **Direct-to-Disk Writing** en skills mecánicas (tests, migraciones, tokens y checklists) para evitar el desperdicio de tokens y saturación de la ventana de contexto en modelos de frontera (Claude Sonnet / Gemini Pro), adaptándose dinámicamente según si el proyecto cuenta con `codebase-memory-mcp` o `graphify`. Se añadieron también las plantillas oficiales de issues de GitLab en `.gitlab/issue_templates/`.
 
@@ -41,7 +41,7 @@ Adicionalmente, se incorporó una arquitectura determinista de **Shunting Guard*
    - Consultas al grafo vía `codebase-memory-mcp` (`search_graph`, `get_code_snippet`, `trace_path`).
    - Consultas a `graphify` (`graphify query`, `graphify path` o navegación de wiki) si se detecta `graphify-out/`.
    - Lecturas quirúrgicas acotadas ($\le 250$ líneas con `StartLine`/`EndLine`).
-3. **Escritura Directa a Disco**: `nestjs-unit-tester`, `generate-qa-checklist`, `design-token-sync` y `component-extractor` generan sus archivos directamente en disco (`write_to_file`) y reportan exclusivamente métricas y signaturas sintéticas en el chat.
+3. **Escritura Directa a Disco**: `nestjs-unit-tester`, `generate-qa-checklist`, `design-token-sync` y `component-migrator` generan sus archivos directamente en disco (`write_to_file`) y reportan exclusivamente métricas y signaturas sintéticas en el chat.
 4. **Sincronización Automática**: El script `scripts/sync_agents.sh` sincroniza de forma segura todas las skills y workflows locales a `~/.gemini/config/skills/` y `.agents/workflows/`.
 5. **Plantillas de GitLab**: Disponibilidad de `reporteTemplate.md` y `reTestTemplate.md` para estandarizar reportes de testing y de issues en GitLab.
 
@@ -79,7 +79,7 @@ Adicionalmente, se incorporó una arquitectura determinista de **Shunting Guard*
 | `skills/back/nestjs-unit-tester/SKILL.md` | Incorpora protocolo Direct-to-Disk Writing: escribe `*.spec.ts` a disco y prohíbe volcar código fuente al chat. |
 | `skills/generales/generate-qa-checklist/SKILL.md` | Incorpora protocolo Direct-to-Disk Writing: genera `qa_checklist.md` y reporta métricas de cobertura en el chat. |
 | `skills/design-system/design-token-sync/SKILL.md` | Incorpora compilación y edición directa a disco, prohibiendo volcar JSONs masivos de tokens. |
-| `skills/design-system/component-extractor/SKILL.md` | Incorpora regla de escritura directa a disco para componentes, barrel exports y stories. |
+| `skills/design-system/component-migrator/SKILL.md` | Incorpora regla de escritura directa a disco para componentes, barrel exports y stories. |
 
 ### Configuración, Sincronización y Plantillas (`scripts/`, `.gitlab/`, `README.md`)
 | Archivo | Cambio |

@@ -1,5 +1,5 @@
 ---
-name: debug-flow
+name: nextjs-nextjs-debug-flow
 description: |
   Debugging sistemático en 4 fases: investigar, analizar, hipotetizar, implementar.
   Regla de hierro: no se aplica ningún fix sin identificar la causa raíz.
@@ -34,10 +34,10 @@ Debugging sistemático para encontrar y arreglar bugs. Cuatro fases secuenciales
 
 ## Cuándo NO usar esta skill
 
-- **Error de diseño/visual** (espaciado, color, tipografía) → `design-audit`
-- **Error de tipos o lint** → `code-health`
-- **Revisar código sin bug concreto** → `code-review`
-- **Planificar una feature nueva** → `architecture-review`
+- **Error de diseño/visual** (espaciado, color, tipografía) → `nextjs-design-audit`
+- **Error de tipos o lint** → `nextjs-code-health`
+- **Revisar código sin bug concreto** → `nextjs-code-review`
+- **Planificar una feature nueva** → `nextjs-architect`
 - **Problema de infraestructura/deploy** → no es debugging de código
 
 ---
@@ -161,4 +161,4 @@ Fix mínimo, verificado, sin efectos colaterales.
 
 ## Al terminar
 
-Sugerir al usuario: **code-review** para validar el fix con code review.
+Sugerir al usuario: **nextjs-code-review** para validar el fix con code review.

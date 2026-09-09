@@ -8,9 +8,9 @@ Workflows de orquestación de subagentes para el monorepo `design-system` (`@des
 
 | Workflow | Para qué sirve | Roles involucrados | Skills que orquesta |
 |---|---|---|---|
-| [`component-migration.md`](./component-migration.md) | Migrar componente del legacy (`desingSystem/`) a `@design-system/react` | `@explorer`, `@architect`, `@coder`, `@reviewer` | `component-extractor`, `component-qa`, `code-review` |
+| [`component-migration.md`](./component-migration.md) | Migrar componente del legacy (`desingSystem/`) a `@design-system/react` | `@explorer`, `@architect`, `@coder`, `@reviewer` | `component-migrator`, `component-qa`, `nextjs-code-review` |
 | [`token-sync.md`](./token-sync.md) | Sincronizar tokens de Figma con Style Dictionary y compilar | `@explorer`, `@architect`, `@coder`, `@reviewer` | `design-token-sync`, `component-qa` |
-| [`component-new.md`](./component-new.md) | Crear componente nuevo en el DS desde Figma con Storybook | `@explorer`, `@architect`, `@coder`, `@reviewer` | `design-craft`, `architecture-review`, `component-qa` |
+| [`component-new.md`](./component-new.md) | Crear componente nuevo en el DS desde Figma con Storybook | `@explorer`, `@architect`, `@coder`, `@reviewer` | `nextjs-design-craft`, `nextjs-architect`, `component-qa` |
 
 ---
 
@@ -18,7 +18,7 @@ Workflows de orquestación de subagentes para el monorepo `design-system` (`@des
 
 ### Migración de Componente (`component-migration.md`)
 ```
-@explorer (Legacy Scout) → @architect (component-extractor) → 🛑 Pausa Humana → @coder [crea componente + story] → @reviewer (component-qa + code-review)
+@explorer (Legacy Scout) → @architect (component-migrator) → 🛑 Pausa Humana → @coder [crea componente + story] → @reviewer (component-qa + nextjs-code-review)
 ```
 
 ### Sincronización de Tokens (`token-sync.md`)
@@ -28,6 +28,6 @@ Workflows de orquestación de subagentes para el monorepo `design-system` (`@des
 
 ### Componente Nuevo (`component-new.md`)
 ```
-@explorer (Figma Scout) → @architect (design-craft) → 🛑 Pausa Humana → @coder [implementación + story] → @reviewer (component-qa)
+@explorer (Figma Scout) → @architect (nextjs-design-craft) → 🛑 Pausa Humana → @coder [implementación + story] → @reviewer (component-qa)
 ```
 

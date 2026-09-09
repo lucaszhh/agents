@@ -1,5 +1,5 @@
 ---
-name: design-craft
+name: nextjs-nextjs-design-craft
 description: |
   Diseñar, rediseñar, pulir, auditar o mejorar interfaces frontend. Cubre
   landing pages, dashboards, componentes, formularios, settings, onboarding,
@@ -198,4 +198,4 @@ corresponda a la superficie.
 
 ## Al terminar
 
-Sugerir al usuario: **design-audit** para QA visual de lo implementado.
+Sugerir al usuario: **nextjs-design-audit** para QA visual de lo implementado.

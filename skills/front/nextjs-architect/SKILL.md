@@ -1,5 +1,5 @@
 ---
-name: architecture-review
+name: nextjs-architect
 description: |
   Revisión de arquitectura antes de implementar. Define estructura de carpetas,
   data flow, servicios, hooks, tipos y estados de UI. Valida contra los patrones
@@ -39,11 +39,11 @@ Si hay un módulo similar al que se va a crear, leerlo completo para replicar el
 
 ## Cuándo NO usar esta skill
 
-- **Cambio de 1 archivo o fix trivial** → `code-review` directo
-- **Cambio solo visual** → `design-audit`
-- **Bug** → `debug-flow`
+- **Cambio de 1 archivo o fix trivial** → `nextjs-code-review` directo
+- **Cambio solo visual** → `nextjs-design-audit`
+- **Bug** → `nextjs-debug-flow`
 - **No sabés qué código existe** → usar `grep` o explorar `src/modules/` directamente
-- **Ya hay un plan y solo querés code review** → `code-review`
+- **Ya hay un plan y solo querés code review** → `nextjs-code-review`
 
 ---
 
@@ -172,6 +172,6 @@ El plan responde todas estas preguntas:
 
 Sugerir al usuario la siguiente skill según el contexto:
 
-- Si hay UI nueva para diseñar → **design-craft**
+- Si hay UI nueva para diseñar → **nextjs-design-craft**
 - Si hay que implementar directamente → empezar a codear siguiendo el plan
 - Si hay que explorar más el código existente → usar `grep` o navegar `src/modules/`

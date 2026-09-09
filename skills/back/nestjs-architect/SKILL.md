@@ -24,7 +24,7 @@ Define, evalúa y valida la arquitectura de proyectos NestJS. Asegura un diseño
 
 ## Cuándo NO usar esta skill
 
-- **Implementar controladores/servicios** → `nestjs-backend-developer`
+- **Implementar controladores/servicios** → `nestjs-developer`
 - **Escribir tests** → `nestjs-unit-tester`
 - **Fix de un bug concreto** → buscar la causa directamente
 
@@ -96,4 +96,4 @@ Orden de generación para evitar dependencias circulares:
 
 ## Al terminar
 
-Sugerir al usuario: **nestjs-backend-developer** para implementar controladores, servicios, DTOs y mappers del módulo creado.
+Sugerir al usuario: **nestjs-developer** para implementar controladores, servicios, DTOs y mappers del módulo creado.

@@ -11,7 +11,7 @@ Las skills viven en `skills/`, organizadas por dominio:
 | `skills/front/` | Desarrollo frontend (Next.js, React Query, design system) | architecture-review, design-craft, design-audit, debug-flow, code-review, code-health |
 | `skills/back/` | Desarrollo backend (NestJS, Clean Architecture, X-Road) | nestjs-architect, nestjs-backend-developer, nestjs-unit-tester |
 | `skills/design-system/` | Monorepo design-system (tokens, componentes, QA) | design-token-sync, component-extractor, component-qa |
-| `skills/generales/` | Tareas transversales | generate-changelog, generate-gitlab-issue-report, generate-migration, generate-qa-checklist |
+| `skills/generales/` | Tareas transversales | generate-changelog, generate-gitlab-issue-report, generate-qa-checklist |
 
 Cada skill es un `SKILL.md` autocontenido en español. Ver `skills/README.md`
 para el formato, las cadenas de flujos y las instrucciones de instalación por harness.
@@ -32,8 +32,6 @@ Antigravity soporta dos ubicaciones principales para las skills:
 **Ejemplo para instalar una skill de forma Global:**
 
 ```bash
-mkdir -p ~/.gemini/config/skills/generate-migration
-cp skills/generales/generate-migration/SKILL.md ~/.gemini/antigravity-cli/skills/generate-migration/
 ```
 
 _(Antigravity las detectará automáticamente de forma transparente)._
@@ -50,8 +48,6 @@ OpenCode sigue un esquema de carpetas muy similar:
 **Ejemplo para instalar una skill de forma Global:**
 
 ```bash
-mkdir -p ~/.config/opencode/skills/generate-migration
-cp skills/generales/generate-migration/SKILL.md ~/.config/opencode/skills/generate-migration/
 ```
 
 ### ⚡ Instalación universal
@@ -85,7 +81,6 @@ npx skills add <repo>
 
 ### Generales (`skills/generales/`)
 
-- **`generate-migration`**: Genera migraciones de base de datos manuales usando QueryRunner para TypeORM.
 - **`generate-changelog`**: Genera o actualiza el archivo CHANGELOG.md basado en notas de release.
 - **`generate-gitlab-issue-report`**: Genera un reporte de issue para GitLab basado en las diferencias con la rama develop.
 - **`generate-qa-checklist`**: Genera checklists de pruebas para QA basados en los flujos afectados.
@@ -105,7 +100,6 @@ Los workflows coEnterprise Engineeringn múltiples skills asignando roles de sub
 |---|---|---|
 | **[`feature`](workflows/back/feature.md)** | Pipeline de módulo NestJS con Clean Architecture | `@explorer` (Flash) $\rightarrow$ `@architect` (Sonnet/Pro) $\rightarrow$ `@coder` (Sonnet/Pro) $\rightarrow$ `@reviewer` (Flash/Sonnet) |
 | **[`bugfix`](workflows/back/bugfix.md)** | Diagnóstico root-cause y fix con tests de regresión | `@debugger` (Flash/Sonnet) $\rightarrow$ `@coder` (Sonnet/Flash) $\rightarrow$ `@reviewer` (Flash/Sonnet) |
-| **[`migration`](workflows/back/migration.md)** | Generación y verificación de migración TypeORM | `@explorer` (Flash) $\rightarrow$ `@coder` (Sonnet/Flash) $\rightarrow$ `@reviewer` (Flash) |
 
 ### Design System ([`workflows/design-system/`](workflows/design-system/))
 | Workflow | Propósito | Roles / Modelos |
@@ -130,7 +124,7 @@ El repositorio implementa una estrategia de reducción de tokens y desacople de 
    - Bloquea volcados de archivos grandes mediante comandos `cat/tail/head` directos sin tuberías de filtrado (`grep`, `head -n 50`).
 
 2. **Protocolo de Escritura Directa a Disco (Direct-to-Disk Writing)**:
-   - Los subagentes generan artefactos repetitivos (pruebas Jest `*.spec.ts`, migraciones TypeORM con `QueryRunner`, tokens compilados y checklists de QA) escribiendo directamente en disco (`write_to_file`).
+   - Los subagentes generan artefactos repetitivos (pruebas Jest `*.spec.ts`, tokens compilados y checklists de QA) escribiendo directamente en disco (`write_to_file`).
    - Prohibido volcar el código fuente completo en las respuestas conversacionales, evitando quemar miles de tokens de salida y saturación del contexto.
    - Los subagentes solo reportan métricas sintéticas (rutas, cantidad de tests passing, signaturas, cobertura).
 

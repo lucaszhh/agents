@@ -8,7 +8,6 @@ Skills transversales, sin dominio específico (frontend, backend o design system
 |---|---|---|
 | `generate-changelog` | Generar/actualizar `CHANGELOG.md` desde notas de versión | "generá el changelog", "actualizá el changelog" |
 | `generate-qa-checklist` | Checklists de pruebas para QA desde el diff contra develop | "generá el QA checklist", "armá la checklist" |
-| `generate-migration` | Migraciones de base de datos manuales con QueryRunner (TypeORM) | "generá la migración" |
 | `generate-gitlab-issue-report` | Reporte de issue para GitLab desde el diff contra develop | "generá el reporte de issue" |
 
 Estas skills se invocan puntualmente, no forman parte de las cadenas de

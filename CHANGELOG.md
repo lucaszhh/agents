@@ -22,8 +22,7 @@
 - component-extractor
 - component-qa
 
-**Generales (4):**
+**Generales (3):**
 - generate-changelog
 - generate-gitlab-issue-report
-- generate-migration
 - generate-qa-checklist

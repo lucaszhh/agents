@@ -9,7 +9,6 @@ Esta carpeta contiene los **Workflows** de desarrollo de Enterprise Production P
 | Dominio | Carpeta | Para qué | Workflows |
 |---|---|---|---|
 | **Frontend** | [`front/`](./front/) | Desarrollo en `frontend-nextjs` (features, refactors, bugfixes) | [`feature.md`](./front/feature.md), [`bugfix.md`](./front/bugfix.md) |
-| **Backend** | [`back/`](./back/) | Desarrollo en `backend` NestJS (Clean Architecture, migraciones, Jest) | [`feature.md`](./back/feature.md), [`bugfix.md`](./back/bugfix.md), [`migration.md`](./back/migration.md) |
 | **Design System** | [`design-system/`](./design-system/) | Desarrollo en monorepo `design-system` (tokens, componentes, QA) | [`component-migration.md`](./design-system/component-migration.md), [`token-sync.md`](./design-system/token-sync.md), [`component-new.md`](./design-system/component-new.md) |
 
 
@@ -59,7 +58,7 @@ Para evitar el desperdicio de tokens en modelos de frontera (Sonnet / Pro) por t
    - El artefacto `docs/context_*.md` no puede superar las **150 líneas**. El arquitecto nunca inhala árboles JSON masivos de Figma.
 
 3. **Escritura Directa a Disco (`code-writer` / `@reviewer` & `@coder`)**:
-   - La generación de código repetitivo (pruebas unitarias `*.spec.ts`, migraciones TypeORM, tokens de diseño y checklists) se escribe **directamente en el disco** con `write_to_file`.
+   - La generación de código repetitivo (pruebas unitarias `*.spec.ts`, tokens de diseño y checklists) se escribe **directamente en el disco** con `write_to_file`.
    - **Prohibido volcar el código fuente completo en el chat**: el subagente solo reporta la ruta del archivo generado, métricas de ejecución (tests passing, tablas alteradas) y signaturas clave.
 
 4. **Limpieza Estricta de Temporales**:

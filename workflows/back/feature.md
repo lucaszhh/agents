@@ -33,7 +33,6 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
                    │ 📄 Genera: docs/back_plan_<feature>.md (con Oportunidades y Gaps)
                    ▼ ⏸️ [COMPUERTA 1: APROBACIÓN DE ARQUITECTURA Y GAPS]
                    │ (Claude Sonnet / Gemini Pro)
-             💻 @coder (nestjs-backend-developer + generate-migration)
                    │
                    │ 🔨 Implementa: domain/ + data/ + presentation/ + Migración
                    ▼ (Gemini Flash / Sonnet)
@@ -91,7 +90,6 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
 
 ### Etapa 3: Implementación Backend y Migraciones (Direct-to-Disk Writing)
 - **Responsable**: `@coder` (Modelo implementador: Claude Sonnet / Gemini Pro)
-- **Skills a invocar**: **`nestjs-backend-developer`** + **`generate-migration`** (si aplica)
 - **Entrada**: `docs/back_plan_<feature>.md` aprobado + decisiones de gaps y negocio.
 - **Reglas mandatorias**:
   - **Patrón Result**: Los servicios de dominio devuelven `Result<T, E>` y no lanzan excepciones no controladas para errores de negocio.

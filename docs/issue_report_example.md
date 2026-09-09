@@ -36,12 +36,12 @@ Adicionalmente, se incorporó una arquitectura determinista de **Shunting Guard*
 ---
 
 ## ✅ Resultado esperado
-1. **Pipelines de Subagentes Disponibles**: Posibilidad de orquestar flujos de desarrollo completos en frontend (`feature`, `bugfix`), backend (`feature`, `bugfix`, `migration`) y design system (`component-migration`, `token-sync`, `component-new`).
+1. **Pipelines de Subagentes Disponibles**: Posibilidad de orquestar flujos de desarrollo completos en frontend (`feature`, `bugfix`), backend (`feature`, `bugfix`) y design system (`component-migration`, `token-sync`, `component-new`).
 2. **Shunting Guard Activo**: Ante cualquier intento de `view_file` sobre archivos $> 350$ líneas o comandos `cat` directos, el hook intercepta la llamada y sugiere:
    - Consultas al grafo vía `codebase-memory-mcp` (`search_graph`, `get_code_snippet`, `trace_path`).
    - Consultas a `graphify` (`graphify query`, `graphify path` o navegación de wiki) si se detecta `graphify-out/`.
    - Lecturas quirúrgicas acotadas ($\le 250$ líneas con `StartLine`/`EndLine`).
-3. **Escritura Directa a Disco**: `nestjs-unit-tester`, `generate-migration`, `generate-qa-checklist`, `design-token-sync` y `component-extractor` generan sus archivos directamente en disco (`write_to_file`) y reportan exclusivamente métricas y signaturas sintéticas en el chat.
+3. **Escritura Directa a Disco**: `nestjs-unit-tester`, `generate-qa-checklist`, `design-token-sync` y `component-extractor` generan sus archivos directamente en disco (`write_to_file`) y reportan exclusivamente métricas y signaturas sintéticas en el chat.
 4. **Sincronización Automática**: El script `scripts/sync_agents.sh` sincroniza de forma segura todas las skills y workflows locales a `~/.gemini/config/skills/` y `.agents/workflows/`.
 5. **Plantillas de GitLab**: Disponibilidad de `reporteTemplate.md` y `reTestTemplate.md` para estandarizar reportes de testing y de issues en GitLab.
 
@@ -62,7 +62,6 @@ Adicionalmente, se incorporó una arquitectura determinista de **Shunting Guard*
 | `workflows/front/bugfix.md` | **Nuevo**: Pipeline frontend para diagnóstico root-cause, fix quirúrgico y QA checklist. |
 | `workflows/back/feature.md` | **Nuevo**: Pipeline backend NestJS con Clean Architecture, inyección desacoplada, patrón Result y migraciones. |
 | `workflows/back/bugfix.md` | **Nuevo**: Pipeline backend para aislamiento de fallos, corrección limpia y test de regresión con Jest. |
-| `workflows/back/migration.md` | **Nuevo**: Pipeline especializado para migraciones manuales en TypeORM con simetría estricta de rollback. |
 | `workflows/design-system/component-migration.md` | **Nuevo**: Pipeline para migrar componentes legacy al monorepo `design-system` con Storybook. |
 | `workflows/design-system/token-sync.md` | **Nuevo**: Pipeline para sincronizar variables de Figma con Style Dictionary y compilar tokens. |
 | `workflows/design-system/component-new.md` | **Nuevo**: Pipeline para crear componentes nuevos con accesibilidad y variants desde Figma. |
@@ -78,7 +77,6 @@ Adicionalmente, se incorporó una arquitectura determinista de **Shunting Guard*
 | Archivo | Cambio |
 |---|---|
 | `skills/back/nestjs-unit-tester/SKILL.md` | Incorpora protocolo Direct-to-Disk Writing: escribe `*.spec.ts` a disco y prohíbe volcar código fuente al chat. |
-| `skills/generales/generate-migration/SKILL.md` | Incorpora protocolo Direct-to-Disk Writing: escribe migración TypeORM a disco y reporta resumen de operaciones. |
 | `skills/generales/generate-qa-checklist/SKILL.md` | Incorpora protocolo Direct-to-Disk Writing: genera `qa_checklist.md` y reporta métricas de cobertura en el chat. |
 | `skills/design-system/design-token-sync/SKILL.md` | Incorpora compilación y edición directa a disco, prohibiendo volcar JSONs masivos de tokens. |
 | `skills/design-system/component-extractor/SKILL.md` | Incorpora regla de escritura directa a disco para componentes, barrel exports y stories. |

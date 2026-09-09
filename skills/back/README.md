@@ -16,7 +16,6 @@ Las cadenas de desarrollo backend pueden ejecutarse de forma automatizada median
 
 ### Feature nueva ([`workflows/back/feature.md`](../../workflows/back/feature.md))
 ```
-@explorer (Domain Scout) → @architect (nestjs-architect) → 🛑 Pausa Humana → @coder (nestjs-backend-developer + generate-migration) → @reviewer (nestjs-unit-tester + code-review + generate-qa-checklist)
 ```
 
 ### Bug fix ([`workflows/back/bugfix.md`](../../workflows/back/bugfix.md))
@@ -24,8 +23,6 @@ Las cadenas de desarrollo backend pueden ejecutarse de forma automatizada median
 @debugger (Root Cause) → @coder [fix con Result] → @reviewer (nestjs-unit-tester con test de regresión)
 ```
 
-### Migración de Base de Datos ([`workflows/back/migration.md`](../../workflows/back/migration.md))
 ```
-@explorer (Entity Diff) → @coder (generate-migration con QueryRunner) → @reviewer (Simetría up/down)
 ```
 

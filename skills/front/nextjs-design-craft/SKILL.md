@@ -1,5 +1,5 @@
 ---
-name: nextjs-nextjs-design-craft
+name: nextjs-design-craft
 description: |
   Diseñar, rediseñar, pulir, auditar o mejorar interfaces frontend. Cubre
   landing pages, dashboards, componentes, formularios, settings, onboarding,
@@ -14,6 +14,22 @@ description: |
 Esta skill te da las herramientas y el permiso para crear diseño con craft excepcional.
 Como director de diseño, abordás cada tarea con: código calidad producción, creatividad
 máxima, punto de vista claro, comprensión profunda del cliente y usuarios, y craft impecable.
+
+## Cuándo usar esta skill
+
+- "diseñá este componente"
+- "rediseñá la landing"
+- "mejorá la UI"
+- "pulí esta pantalla"
+- "hacelo más premium"
+- Al crear o refinar interfaces frontend, dashboards, componentes, formularios o estados vacíos con altos estándares visuales, UX y accesibilidad.
+
+## Cuándo NO usar esta skill
+
+- **QA visual sobre componentes ya implementados** → `nextjs-design-audit`
+- **Auditar arquitectura frontend o data flow** → `nextjs-architect`
+- **Revisar el diff de código pre-merge** → `nextjs-code-review`
+- **Resolver bugs funcionales o excepciones** → `nextjs-debug-flow`
 
 ## Principios de diseño
 
@@ -80,11 +96,28 @@ máxima, punto de vista claro, comprensión profunda del cliente y usuarios, y c
 - Un componente similar como referencia de patrones
 - Los aliases: `@desingSystem/*`, `@/`, `@env`, `@envClient`
 
-### Paso 3 — Mirar pantallas similares
+### Paso 3 — Mirar pantallas similares y captura visual
 
 - Buscar 2-3 pantallas del mismo módulo o tipo en el proyecto
 - Copiar patrones de espaciado, tipografía, colores
 - No inventar si ya existe un patrón — mantener consistencia
+
+#### Captura e Inspección Visual Automatizada (Playwright CLI)
+Para no diseñar a ciegas y evaluar la superficie visual real antes y durante el refactor:
+```bash
+# Mobile (375x667)
+pnpm exec playwright screenshot --viewport-size=375,667 --url http://localhost:3000/[ruta] .agents/designs/screenshots/mobile-design.png
+
+# Tablet (768x1024)
+pnpm exec playwright screenshot --viewport-size=768,1024 --url http://localhost:3000/[ruta] .agents/designs/screenshots/tablet-design.png
+
+# Desktop (1280x800)
+pnpm exec playwright screenshot --viewport-size=1280,800 --url http://localhost:3000/[ruta] .agents/designs/screenshots/desktop-design.png
+```
+Inspeccionar los screenshots generados antes de ajustar espaciados, fuentes o contrastes.
+
+> ℹ️ **Degradación Elegante (Fallback si Playwright no está configurado)**:  
+> Si `playwright` no está instalado en el proyecto o faltan los navegadores de prueba, no interrumpir el flujo ni ciclar en reintentos. Proceder con la inspección estática del código JSX/TSX y tokens de diseño, indicando en el reporte sintético que la verificación visual final queda delegada a la revisión manual del usuario en el navegador local.
 
 ### Paso 4 — Diseñar con el modo correcto
 
@@ -185,17 +218,29 @@ corresponda a la superficie.
 - NO usar texto genérico de placeholder — el copy debe ser real y contextual
 - NO entregar diseño sin haber iterado al menos una vez
 - NO crear valores hardcodeados — usar tokens del design system
+- NO volcar código JSX/TSX completo de componentes en la respuesta de chat — usar `write_to_file`
+
+---
+
+## Protocolo de Entrega Direct-to-Disk OBLIGATORIO
+
+1. **Especificación técnica**: Registrar la arquitectura de diseño en `.agents/designs/<screen-kebab-case>-spec.md` (`write_to_file`) siguiendo la plantilla oficial [`templates/design-spec.template.md`](./templates/design-spec.template.md).
+2. **Código de componentes**: Crear o editar los archivos de componentes directamente en `src/modules/<dominio>/components/` con `write_to_file`.
+3. **Reporte sintético en chat**: Reportar únicamente el enlace al archivo de spec, componentes creados y confirmación de los 3 breakpoints verificados.
+
+---
 
 ## Verificación
 
-- El diseño respeta el design system del proyecto (`@desingSystem/*`)
-- Funciona en 3 breakpoints (mobile 375px, tablet 768px, desktop 1200px+)
-- Cubre todos los estados (loading, empty, error, success, edge cases)
-- No tiene imports de librerías de UI fuera del design system
-- La lógica está separada en hooks, los componentes son dumb
-- Iteró al menos 2 veces
-- Espaciado múltiplo de 8px, contraste ≥ 4.5:1
+- Confirmar persistencia de la especificación en `.agents/designs/<screen-kebab-case>-spec.md`.
+- El diseño respeta el design system del proyecto (`@desingSystem/*`).
+- Funciona en 3 breakpoints (mobile 375px, tablet 768px, desktop 1200px+).
+- Cubre todos los estados (loading, empty, error, success, edge cases).
+- No tiene imports de librerías de UI fuera del design system.
+- La lógica está separada en hooks, los componentes son dumb.
+- Iteró al menos 2 veces.
+- Espaciado múltiplo de 8px, contraste ≥ 4.5:1.
 
 ## Al terminar
 
-Sugerir al usuario: **nextjs-design-audit** para QA visual de lo implementado.
+Confirmar la creación del spec en `.agents/designs/<screen-kebab-case>-spec.md` y de los componentes en disco. Sugerir al usuario: **nextjs-design-audit** para QA visual de lo implementado.

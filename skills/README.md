@@ -41,6 +41,14 @@ Cada skill es **un solo `SKILL.md`** con:
 - Las skills NO dependen de gstack ni de MCPs de terceros. Herramientas: comandos
   del repo, git, y MCPs propios del proyecto si están documentados en la skill.
 
+### Validación en CI
+
+Todas las skills son validadas en CI mediante:
+```bash
+pnpm run lint:skills
+```
+Verifica frontmatter válido, coincidencia de `name` con el directorio, presencia de las 6 secciones obligatorias y ausencia de two-dot diff sin justificar.
+
 ## Instalación
 
 Las skills se instalan copiando la carpeta `<nombre>/` con su `SKILL.md` a la

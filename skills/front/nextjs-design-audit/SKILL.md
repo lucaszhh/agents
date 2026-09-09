@@ -1,5 +1,5 @@
 ---
-name: nextjs-nextjs-design-audit
+name: nextjs-design-audit
 description: |
   QA visual sobre lo ya codeado. Encuentra inconsistencias de espaciado, jerarquía,
   tipografía, color, responsive y motion. Arregla iterativamente cada issue
@@ -139,7 +139,21 @@ Puntuar cada categoría de 0 a 20:
 
 Por cada issue encontrado:
 
-1. **Documentar:** screenshot, descripción, severidad (CRÍTICO/ALTO/MEDIO/BAJO), archivo:línea afectado
+1. **Documentar:** captura de pantalla en 3 breakpoints o inspección DOM, descripción, severidad (CRÍTICO/ALTO/MEDIO/BAJO), archivo:línea afectado:
+   ```bash
+   # Captura automatizada en 3 breakpoints con Playwright CLI
+   npx playwright screenshot --url http://localhost:3000/[ruta] --viewport-size=375,667 .agents/audits/screenshots/[screen]-mobile-before.png
+   npx playwright screenshot --url http://localhost:3000/[ruta] --viewport-size=768,1024 .agents/audits/screenshots/[screen]-tablet-before.png
+   npx playwright screenshot --url http://localhost:3000/[ruta] --viewport-size=1200,800 .agents/audits/screenshots/[screen]-desktop-before.png
+
+   # Chequeo automatizado de accesibilidad (a11y / axe / WCAG 2.1 AA)
+   npx pa11y http://localhost:3000/[ruta]
+   # O si se auditan componentes en Storybook:
+   pnpm test-storybook --stories="**/[Componente].stories.*"
+   ```
+   > ℹ️ **Degradación Elegante (Fallback de captura y a11y)**:  
+   > - Si `playwright` no está disponible o el servidor dev no está activo, documentar el issue mediante inspección estática del código JSX/tokens sin generar archivos PNG.  
+   > - Si `pa11y` falla o no está instalado, auditar accesibilidad manualmente con el checklist de accesibilidad (contraste 4.5:1, `aria-label`, foco y semántica HTML) sin interrumpir el flujo.
 2. **Arreglar:** fix mínimo en el source
 3. **Commit atómico:** un commit por fix
 4. **Re-verificar:** screenshot after, confirmar que el issue desapareció
@@ -149,10 +163,25 @@ Prioridad de fixes: CRÍTICO > ALTO > MEDIO > BAJO.
 
 ---
 
+## Protocolo Direct-to-Disk OBLIGATORIO
+
+1. **Plantilla oficial**: Utilizar la estructura definida en [`templates/visual-audit.template.md`](./templates/visual-audit.template.md).
+2. **Destino del informe**: Guardar el reporte en `.agents/audits/<screen-kebab-case>-audit.md` (`write_to_file`).
+3. **Prohibido volcar el informe completo en el chat**: No imprimir tablas completas de issues resueltos ni logs extensos.
+4. **Reporte Sintético en Chat**:
+   - **Ruta del reporte**: enlace a `.agents/audits/<screen-kebab-case>-audit.md`.
+   - **Score final**: puntaje 0-100 antes y después de los fixes.
+   - **Fixes aplicados**: lista con los commits atómicos generados.
+   - **Próximo paso**: sugerir invocar `nextjs-code-review`.
+
+---
+
 ## Reglas de lo que SÍ debe hacer
 
+- Guardar el reporte completo en `.agents/audits/<screen-kebab-case>-audit.md` (`write_to_file`)
+- Reportar en el chat únicamente el resumen sintético, score antes/después y commits atómicos
 - Comparar contra el design system del proyecto, no contra opinión personal
-- Screenshotear antes y después de cada fix
+- Capturar evidencia antes y después de cada fix
 - Dar puntuación objetiva con justificación por categoría
 - Arreglar los issues encontrados (no solo reportarlos)
 - Priorizar severidad: CRÍTICO > ALTO > MEDIO > BAJO
@@ -162,6 +191,7 @@ Prioridad de fixes: CRÍTICO > ALTO > MEDIO > BAJO.
 
 ## Reglas de lo que NO debe hacer
 
+- NO volcar el reporte completo de auditoría en la conversación de chat
 - NO auditar subjetivamente — usar el design system como referencia objetiva
 - NO revisar solo en desktop — siempre verificar mobile (375px) y tablet (768px)
 - NO revisar solo el happy path — forzar estados de error, vacío y carga
@@ -175,12 +205,13 @@ Prioridad de fixes: CRÍTICO > ALTO > MEDIO > BAJO.
 
 ## Verificación
 
+- Confirmar persistencia del reporte en `.agents/audits/<screen-kebab-case>-audit.md`.
 - Issues encontrados → documentados
 - Issues arreglados → commit atómico por fix
-- Re-verificados → screenshot after
+- Re-verificados → evidencia after confirmada
 - Score final > 60
 - Reporte con: issues encontrados, fixes aplicados, score antes/después
 
 ## Al terminar
 
-Sugerir al usuario: **nextjs-code-review** para code review del diff acumulado (los commits de los fixes).
+Confirmar persistencia del reporte en `.agents/audits/<screen-kebab-case>-audit.md`. Sugerir al usuario: **nextjs-code-review** para code review del diff acumulado (los commits de los fixes).

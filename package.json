@@ -1,0 +1,14 @@
+{
+  "name": "agents-skills",
+  "version": "1.0.0",
+  "description": "Colección de Agent Skills del equipo Enterprise Platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint:skills": "node scripts/lint-skills.mjs"
+  },
+  "devDependencies": {
+    "yaml": "^2.7.0"
+  },
+  "packageManager": "pnpm@11.24.0"
+}

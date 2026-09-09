@@ -1,5 +1,5 @@
 ---
-name: nextjs-nextjs-code-health
+name: nextjs-code-health
 description: |
   Dashboard de calidad de código. Ejecuta linter y type checker del proyecto,
   analiza estructura de módulos y detecta deuda técnica. Computa un score
@@ -57,20 +57,33 @@ cat package.json | grep -A 20 '"scripts"'
 
 ### Paso 1 — Ejecutar checks reales
 
-NO adivinar. Ejecutar los comandos reales:
+El método preferido y multiplataforma es ejecutar el script de salud sin dependencias de tuberías bash:
+
+```bash
+# Ejecución completa con resumen en terminal y colores ANSI
+node scripts/check_code_health.mjs
+
+# Para agentes y pipelines CI/CD (emite JSON estructurado de métricas)
+node scripts/check_code_health.mjs --json
+
+# Guardar métricas automáticamente en .health-history.jsonl
+node scripts/check_code_health.mjs --save
+```
+
+Si se ejecutan las herramientas manualmente, evitar pipes dependientes de GNU bash (`tee /tmp/...`):
 
 ```bash
 # Linter
-pnpm run lint 2>&1 | tee /tmp/lint-output.txt
+pnpm run lint
 
 # TypeScript
-pnpm run typecheck 2>&1 | tee /tmp/typecheck-output.txt
+pnpm run typecheck
 
 # Tests (si existe)
-pnpm run test 2>&1 | tee /tmp/test-output.txt
+pnpm run test
 
 # Build (opcional, para verificar que compila)
-pnpm run build 2>&1 | tee /tmp/build-output.txt
+pnpm run build
 ```
 
 Si un script no existe, reportarlo y continuar con los demás. NO fallar silenciosamente.
@@ -157,18 +170,15 @@ Scoring:
 
 ### Check 4 — Deuda técnica (1 punto)
 
-Buscar patrones de deuda:
+`scripts/check_code_health.mjs` realiza el análisis estático de código sin pipes bash. Si se desea auditar patrones manualmente:
 
 ```bash
 # Console logs y debugger
-grep -rn "console\.\(log\|debug\|info\)" src/ --include="*.ts" --include="*.tsx" | head -20
-grep -rn "debugger" src/ --include="*.ts" --include="*.tsx" | head -10
+grep -rn "console\.\(log\|debug\|info\)" src/ --include="*.ts" --include="*.tsx"
+grep -rn "debugger" src/ --include="*.ts" --include="*.tsx"
 
 # TODOs sin resolver
-grep -rn "TODO\|FIXME\|HACK\|XXX" src/ --include="*.ts" --include="*.tsx" | head -20
-
-# Imports no usados (verificar manualmente o con lint)
-grep -rn "^import" src/ --include="*.ts" --include="*.tsx" | head -20
+grep -rn "TODO\|FIXME\|HACK\|XXX" src/ --include="*.ts" --include="*.tsx"
 ```
 
 Scoring:
@@ -183,13 +193,8 @@ Scoring:
 
 ### Bonus — Archivos grandes (-1 punto si aplica)
 
-```bash
-# Archivos > 500 líneas
-find src/ -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -rn | head -20
-
-# Archivos > 1000 líneas (flag como crítico)
-find src/ -name "*.ts" -o -name "*.tsx" | xargs wc -l | awk '$1 > 1000 {print}'
-```
+`scripts/check_code_health.mjs` cuenta las líneas de todos los archivos fuente automáticamente.
+Para inspección manual:
 
 - Archivos > 500 líneas: listarlos
 - Archivos > 1000 líneas: flaggear como crítico
@@ -210,24 +215,25 @@ Sumar los puntos de los 4 checks, restar penalizaciones. Mínimo 0, máximo 10.
 
 ---
 
-## Guardar historial
+## Protocolo Direct-to-Disk OBLIGATORIO
 
-Al finalizar, guardar el resultado en `.health-history.jsonl` para poder comparar:
-
-```json
-{"date":"2026-08-20","score":7.5,"lint":{"errors":0,"warnings":3},"typescript":{"errors":0},"structure":{"violations":0},"debt":{"issues":2},"penalties":0}
-```
-
-Si existe historial previo (últimas 10 entradas):
-1. Mostrar tendencia: score actual vs score anterior vs promedio
-2. Si el score bajó: identificar qué check empeoró
-3. Si el score subió: celebrar la mejora
+1. **Plantilla oficial**: Utilizar la estructura definida en [`templates/code-health.template.md`](./templates/code-health.template.md).
+2. **Destino del reporte**: Escribir el informe detallado en `.agents/health/health-report.md` (`write_to_file`).
+3. **Registro histórico**: Apendear la entrada de score en `.health-history.jsonl`.
+4. **Prohibido volcar logs masivos en chat**: No imprimir listas exhaustivas de warnings ni volcados de terminal. Si se detectan más de 10 violaciones o errores masivos (>50), truncar el listado en el chat a los 5 errores más frecuentes y remitir al informe detallado en `.agents/health/health-report.md`.
+5. **Reporte Sintético en Chat**:
+   - **Ruta del informe**: enlace a `.agents/health/health-report.md`.
+   - **Score final**: puntaje 0-10 con desglose de checks y tendencia histórica.
+   - **Monolitos y acciones inmediatas**: lista de archivos >1000 líneas y fixes prioritarios recomendados.
 
 ---
 
 ## Reglas de lo que SÍ debe hacer
 
-- Ejecutar los checks REALES (no adivinar)
+- Guardar el reporte completo en `.agents/health/health-report.md` (`write_to_file`)
+- Apendear el resultado en `.health-history.jsonl`
+- Reportar en el chat únicamente el resumen sintético, score y tendencia
+- Ejecutar los checks REALES con `node scripts/check_code_health.mjs` (no adivinar)
 - Detectar automáticamente los scripts del `package.json` (no hardcodear `pnpm`)
 - Reportar tendencia si hay health checks anteriores
 - Dar fixes concretos para cada problema encontrado
@@ -237,6 +243,8 @@ Si existe historial previo (últimas 10 entradas):
 
 ## Reglas de lo que NO debe hacer
 
+- NO volcar logs completos ni salidas masivas de linter en la respuesta de chat
+- NO omitir la escritura del informe en `.agents/health/health-report.md`
 - NO cambiar código para "arreglar" el score durante el health check
 - NO ignorar errores de tipo aunque el lint pase
 - NO reportar como "saludable" si hay >10 errores de cualquier tipo
@@ -246,9 +254,16 @@ Si existe historial previo (últimas 10 entradas):
 - NO instalar dependencias nuevas para los checks
 - NO fallar silenciosamente si un script no existe — reportarlo
 
+## Verificación
+
+- Confirmar persistencia del reporte en `.agents/health/health-report.md` y de la entrada en `.health-history.jsonl`.
+- Ejecutar el runner de Code Health (`node scripts/check_code_health.mjs` o `pnpm health`).
+- Validar que el puntaje final calculado sea >= 8/10 y que los checks bloqueantes (Linter y TypeScript) tengan 0 errores.
+- Confirmar que el resumen y el historial `.health-history.jsonl` reflejen fielmente el estado actual del repositorio.
+
 ## Al terminar
 
-Mostrar score final con breakdown por categoría y tendencia (si hay historial).
+Confirmar la persistencia del reporte en `.agents/health/health-report.md`. Mostrar score final con breakdown por categoría y tendencia (si hay historial).
 Si el score es < 6, sugerir fixes concretos por prioridad y recomendar volver a correr
 `nextjs-code-review` después de los arreglos.
 

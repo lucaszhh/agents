@@ -1,11 +1,6 @@
 ---
 name: design-token-sync
-description: |
-  Sincronizar los design tokens del repo design-system con el archivo fuente de
-  Figma. Actualiza colors, spacing, border-radius, typography, strokes y shadows
-  en packages/tokens/src/*.json. Usar con "sincronizá los tokens", "actualizá
-  los tokens desde Figma", "sync tokens", "cambió el color en Figma", cuando
-  el equipo de diseño cambia variables o estilos en Figma.
+description: Sincroniza design tokens entre Figma y el monorepo de design-system (packages/tokens/src/*.json). Valida sintaxis JSON, detecta variables modificadas o eliminadas y compila Style Dictionary. Usar con "sincronizá los tokens", "actualizá los tokens desde Figma", "sync tokens", "cambió el color en Figma".
 ---
 
 # Sincronización de Design Tokens
@@ -112,6 +107,21 @@ Detectar:
 - Mantener el formato y las claves existentes (no renombrar keys sin avisar)
 - Respetar el patrón de nombres ya establecido
 
+### 3b — Validación de Schema y Sintaxis JSON Previa al Build
+Antes de compilar con Style Dictionary, validar sintaxis y formato para evitar fallos sin contexto:
+```bash
+# Validación con Prettier
+npx prettier --check packages/tokens/src/*.json
+
+# Validación determinista de parseo JSON en Node.js
+node -e 'const fs=require("fs"); fs.readdirSync("packages/tokens/src").filter(f=>f.endsWith(".json")).forEach(f=>{ JSON.parse(fs.readFileSync("packages/tokens/src/"+f)); console.log("✓", f); });'
+```
+
+### 3c — Diff Semántico de Variables y Alerta de Ruptura
+Examinar los tokens modificados mediante el diff de git:
+- **Alerta ALTA de Ruptura**: Si se eliminó o renombró un token de color o espaciado semántico en uso activo por `@design-system/react`, alertar inmediatamente.
+- Prohibido borrar tokens sin confirmación explícita de diseño/producto.
+
 ### 4 — Verificar
 
 1. `pnpm build:tokens` — debe compilar sin errores
@@ -123,17 +133,22 @@ Detectar:
 ### 5 — Reportar (Direct-to-Disk Writing)
 
 - **Escribir directamente a disco**: Editar los archivos JSON y compilar con `pnpm build:tokens` en el monorepo sin volcar el JSON completo en la conversación.
+- **Plantilla oficial de reporte**: Utilizar [`templates/token-sync-report.template.md`](./templates/token-sync-report.template.md) y guardar el informe en `.agents/tokens/token-sync-report.md` (`write_to_file`).
 - **Prohibido volcar JSONs extensos al chat**: Evitar saturar el contexto con estructuras de tokens completas.
-- **Formato obligatorio de reporte**:
-  - Archivos JSON modificados en `packages/tokens/src/`.
-  - Tabla breve o lista con los tokens específicos modificados o agregados (`token`: `valor`).
-  - Tokens huérfanos o eliminados en Figma que requieren confirmación humana.
-  - Resultado de la compilación (`pnpm build:tokens`).
+- **Formato obligatorio de reporte en chat (Sintético)**:
+  - **Ruta del informe**: enlace a `.agents/tokens/token-sync-report.md`.
+  - **Archivos JSON modificados**: lista de archivos en `packages/tokens/src/`.
+  - **Diff semántico resumido**: tabla breve con los tokens clave modificados o agregados (`token`: `valor`).
+  - **Tokens huérfanos/deprecados**: advertencia explícita si se encontraron tokens que requieren confirmación humana.
+  - **Resultado de compilación**: confirmación de `pnpm build:tokens` exitoso.
 
 ---
 
 ## Reglas de lo que SÍ debe hacer
 
+- Guardar el reporte completo en `.agents/tokens/token-sync-report.md` (`write_to_file`)
+- Reportar en el chat únicamente el resumen sintético y tokens que requieren confirmación
+- Validar formato y sintaxis JSON con `npx prettier --check packages/tokens/src/*.json`
 - Comparar contra Figma (o el JSON exportado), no contra opinión
 - Actualizar el token exacto con el valor exacto de Figma
 - Verificar con `pnpm build:tokens` después de tocar cualquier JSON
@@ -142,6 +157,8 @@ Detectar:
 
 ## Reglas de lo que NO debe hacer
 
+- NO volcar JSONs completos de tokens en la respuesta de chat
+- NO omitir la persistencia del reporte en `.agents/tokens/token-sync-report.md`
 - NO inventar valores: todo valor debe venir de Figma o del JSON exportado
 - NO borrar tokens sin confirmar con el usuario/diseño
 - NO tocar el theme de MUI en esta skill — es sincronización de tokens
@@ -151,9 +168,17 @@ Detectar:
 - NO modificar tipografía si el cambio no viene de Figma
 - NO reordenar keys solo por estética — mantener el diff mínimo
 
+## Verificación
+
+- Confirmar persistencia del reporte en `.agents/tokens/token-sync-report.md`.
+- Validar sintaxis de JSON con `npx prettier --check packages/tokens/src/*.json`.
+- Compilar los tokens (`pnpm build:tokens` o `pnpm build`) para asegurar que no haya errores de sintaxis JSON ni en los transformadores de Style Dictionary.
+- Comprobar que los archivos generados en `packages/tokens/dist/` (o equivalentes) reflejan exactamente las modificaciones de diseño.
+- Validar que no se rompan las dependencias en `@design-system/react` (`pnpm build:react`).
+
 ## Al terminar
 
-Si se agregaron tokens nuevos que un componente debería usar, sugerir
+Confirmar persistencia del reporte en `.agents/tokens/token-sync-report.md`. Si se agregaron tokens nuevos que un componente debería usar, sugerir
 **component-migrator** para migrar el componente con los tokens al día.
 Si ya hay componentes migrados, sugerir **component-qa** para verificar que no
 se rompieron con el cambio de tokens.

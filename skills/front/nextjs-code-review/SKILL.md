@@ -1,5 +1,5 @@
 ---
-name: nextjs-nextjs-code-review
+name: nextjs-code-review
 description: |
   Code review del diff contra la branch base. Analiza estructura, convenciones,
   estados de UI, tipos y seguridad. Cada hallazgo clasificado por severidad
@@ -38,15 +38,30 @@ los tests no atrapan. Cada hallazgo con severidad, línea específica y fix suge
 
 ---
 
-## Paso 1 — Entender qué cambió
+## Metodología
 
-1. `git diff <base>...HEAD` o `git diff origin/develop...HEAD`
-2. Identificar:
-   - ¿Qué módulos de `src/modules/` se tocan?
-   - ¿Cuántos archivos? (+50 archivos = señal de alerta)
-   - ¿Cuántas líneas? (+500 líneas = revisar granularidad)
-3. Leer los commits para entender la intención del cambio
-4. Si hay PR description/template, leerla
+### Paso 0 — Pre-check determinista obligatorio (Linter & Types)
+
+Antes de iniciar el análisis semántico y humano, ejecutar las herramientas automáticas:
+```bash
+pnpm run lint
+pnpm run typecheck
+```
+Si se detectan violaciones automáticas, reportar inmediatamente el diff/listado de errores de linter. Los errores de linter o compilación bloquean la aprobación.
+
+### Paso 1 — Entender qué cambió con diff aislado
+
+Ejecutar la comparación segura contra el merge-base (diff three-dot) aislando la branch base:
+```bash
+BASE="develop"; [ -z "$(git rev-parse --verify -q "$BASE")" ] && BASE="origin/develop"
+git diff "$BASE"...HEAD
+```
+Identificar:
+- ¿Qué módulos de `src/modules/` se tocan?
+- ¿Cuántos archivos? (+50 archivos = señal de alerta)
+- ¿Cuántas líneas? (+500 líneas = revisar granularidad)
+- Leer los commits para entender la intención del cambio (`git log "$BASE"..HEAD --oneline`)
+- Si hay PR description/template, leerla
 
 ---
 
@@ -135,6 +150,31 @@ Para cada componente nuevo o modificado que renderiza datos:
 
 ---
 
+### Paso 6 — Generar el reporte (.agents/reviews/<branch>-review.md)
+
+#### Protocolo Direct-to-Disk OBLIGATORIO
+
+1. **Plantilla oficial**: Utilizar la estructura definida en [`templates/code-review.template.md`](./templates/code-review.template.md).
+2. **Destino del entregable**: Escribir el reporte completo en `.agents/reviews/<branch-o-pr>-review.md` (`write_to_file`).
+3. **Prohibido volcar el reporte completo al chat**: No imprimir tablas interminables de hallazgos menores o el diff analizado.
+4. **Reporte Sintético en el Chat**:
+   El subagente reviewer debe responder obligatoriamente utilizando esta plantilla markdown:
+   ```markdown
+   ### 🔍 Resumen de Code Review
+   - **Reporte completo**: [.agents/reviews/<branch>-review.md](.agents/reviews/<branch>-review.md)
+   - **Veredicto**: [ APROBADO | REQUIERE CAMBIOS ]
+   - **Pre-check (lint/typecheck)**: [ Pasó limpio | N violaciones ]
+
+   #### 🚫 Tabla Resumen de Bloqueantes (CRÍTICO / ALTO)
+   | Severidad | Archivo y Línea | Problema Detectado | Fix Sugerido |
+   |---|---|---|---|
+   | CRÍTICO / ALTO | `src/.../file.tsx:42` | Descripción del fallo | Fix concreto |
+
+   - **Siguiente paso recomendado**: [ Resolver bloqueantes antes de mergear | Ejecutar `nextjs-code-health` ]
+   ```
+
+---
+
 ## Severidad
 
 | Nivel | Significado | Ejemplos |
@@ -148,6 +188,8 @@ Para cada componente nuevo o modificado que renderiza datos:
 
 ## Reglas de lo que SÍ debe hacer
 
+- Guardar el reporte completo en `.agents/reviews/<branch>-review.md` (`write_to_file`)
+- Reportar en el chat únicamente el resumen sintético y hallazgos bloqueantes (CRÍTICO/ALTO)
 - Leer el diff completo antes de emitir juicio
 - Citar archivo y línea específica para cada hallazgo
 - Clasificar cada hallazgo con severidad (CRÍTICO/ALTO/MEDIO/BAJO)
@@ -159,6 +201,8 @@ Para cada componente nuevo o modificado que renderiza datos:
 
 ## Reglas de lo que NO debe hacer
 
+- NO volcar el reporte completo ni código extenso en la conversación del chat
+- NO omitir la escritura del archivo en `.agents/reviews/<branch>-review.md`
 - NO aprobar si hay lógica de negocio en `src/app/`
 - NO aprobar si hay imports de `@mui/*` fuera del design system (`@desingSystem/*` / `src/modules/desingSystem/`)
 - NO hacer review de espaciado/colores/visual — eso es `nextjs-design-audit`
@@ -170,6 +214,13 @@ Para cada componente nuevo o modificado que renderiza datos:
 - NO ignorar la estructura de módulos — cada cambio debe estar en el módulo correcto
 - NO hacer review sin leer AGENTS.md primero (cada proyecto tiene sus reglas)
 
+## Verificación
+
+- Confirmar que se escribió el reporte en `.agents/reviews/<branch>-review.md`.
+- Confirmar que se han revisado la totalidad de los archivos modificados identificados en `git diff <base>...HEAD`.
+- Validar que no existan hallazgos de severidad CRÍTICO o ALTO pendientes de resolución antes de autorizar el PR/MR.
+- Comprobar que las reglas de ESLint custom (`eslint.config.mjs`) no hayan sido vulneradas.
+
 ## Al terminar
 
-Sugerir al usuario: **nextjs-code-health** para correr lint y typecheck, y verificar score de calidad.
+Confirmar persistencia del reporte en `.agents/reviews/<branch>-review.md`. Sugerir al usuario: **nextjs-code-health** para correr lint y typecheck, y verificar score de calidad.

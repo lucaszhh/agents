@@ -13,7 +13,7 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
 | Rol | Subagente | Modelo Sugerido | Herramientas | Modo |
 |---|---|---|---|---|
 | **Context Scout** | `@explorer` | Gemini Flash / Haiku | MCP Figma, codebase-memory / graphify, read_file | Solo lectura |
-| **Tech Lead** | `@architect` | Claude Sonnet / Gemini Pro | read_file, write_file (solo `docs/*.md`) | Planificación |
+| **Tech Lead** | `@architect` | Claude Sonnet / Gemini Pro | read_file, write_file (`.agents/plans/*.md`, `docs/*.md`) | Planificación |
 | **Implementador** | `@coder` | Claude Sonnet / Gemini Pro | read_file, write_file, edit_file, terminal | Código |
 | **Auditor / QA** | `@reviewer` | Gemini Flash / Sonnet | read_file, terminal (`pnpm run lint`), edit | Auditoría y QA |
 
@@ -31,7 +31,7 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
            ▼ (Claude Sonnet / Gemini Pro)
       📐 @architect (Tech Lead — nextjs-architect + nextjs-design-craft + Gaps Audit)
            │
-           │ 📄 Genera: docs/plan_<feature>.md (con sección Oportunidades y Gaps)
+           │ 📄 Genera: .agents/plans/<feature>.md (con sección Oportunidades y Gaps)
            ▼ ⏸️ [COMPUERTA 1: APROBACIÓN DE ARQUITECTURA Y DECISIÓN DE GAPS]
            │ (Claude Sonnet / Gemini Pro)
       💻 @coder (Implementador Frontend)
@@ -43,7 +43,7 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
            │ 📄 Genera: Matriz de QA (Happy path, Edge cases, Negativos, Regresión)
            ▼ ⏸️ [COMPUERTA 2: VALIDACIÓN DE QA Y TESTING]
            │
-           ▼ 🧹 Limpieza automática de temporales (docs/context_*, docs/plan_*, qa_checklist.md)
+           ▼ 🧹 Limpieza automática de temporales (docs/context_*, .agents/plans/*, qa_checklist.md)
 ```
 
 ---
@@ -82,7 +82,7 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
   5. **Auditoría Proactiva de Cobertura y Gaps (OBLIGATORIO)**:
      - Analizar si el requerimiento funcional deja elementos adyacentes o simétricos sin cubrir (ej. enlaces del sidebar sin tracking, estados de error no contemplados, botones secundarios sin acción).
      - Documentar explícitamente estas oportunidades de mejora para que el desarrollador decida si incluirlas antes de codificar.
-- **Salida**: Genera `docs/plan_<feature>.md` conteniendo obligatoriamente:
+- **Salida**: Genera directamente en disco `.agents/plans/<feature>.md` (sin volcar el plan en el chat; en el chat reporta enlace, resumen sintético y preguntas/gaps) conteniendo obligatoriamente:
   - Desglose técnico de componentes y hooks.
   - **Sección "Oportunidades de Mejora y Gaps Detectados"** (análisis de consistencia y elementos omitidos en el requerimiento original).
   - **Sección "Preguntas de Negocio"** (consultas explícitas de alcance al usuario).
@@ -90,13 +90,13 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
 ---
 
 ### 🛑 COMPUERTA 1: VALIDACIÓN HUMANA DE ARQUITECTURA Y GAPS
-> **Pausa obligatoria**: El desarrollador revisa `docs/plan_<feature>.md`, responde las preguntas de negocio, decide sobre las oportunidades/gaps planteados y aprueba formalmente el inicio de la implementación.
+> **Pausa obligatoria**: El desarrollador revisa `.agents/plans/<feature>.md`, responde las preguntas de negocio, decide sobre las oportunidades/gaps planteados y aprueba formalmente el inicio de la implementación.
 
 ---
 
 ### Etapa 3: Implementación Frontend
 - **Responsable**: `@coder` (Modelo implementador: Claude Sonnet / Gemini Pro)
-- **Entrada**: `docs/plan_<feature>.md` aprobado + decisiones de gaps y negocio.
+- **Entrada**: `.agents/plans/<feature>.md` aprobado + decisiones de gaps y negocio.
 - **Reglas mandatorias**:
   - Prohibido importar `@mui/*` directamente fuera de `src/modules/desingSystem/`.
   - Prohibido hardcodear colores (`#fff`, `#0284c7`, etc.) — usar siempre tokens del DS.
@@ -117,5 +117,5 @@ Orquesta la ingesta de diseño, planificación técnica, auditoría de gaps de n
   3. Ejecutar **`nextjs-code-review`** sobre el diff pre-merge contra `develop`.
   4. Ejecutar **`generate-qa-checklist`** (escribe directo a disco `qa_checklist.md`).
   5. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de verificación y métricas de testing, esperando su interacción.
-  6. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria todos los archivos temporales generados en el ciclo (`docs/context_<feature>.md`, `docs/plan_<feature>.md`, `qa_checklist.md`, reportes locales) para dejar el árbol de Git (`git status`) 100% limpio.
+  6. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria todos los archivos temporales generados en el ciclo (`docs/context_<feature>.md`, `.agents/plans/<feature>.md`, `qa_checklist.md`, reportes locales) para dejar el árbol de Git (`git status`) 100% limpio.
 - **Salida**: Reporte de QA sintético, matriz de pruebas para el equipo de testing y workspace limpio de temporales.

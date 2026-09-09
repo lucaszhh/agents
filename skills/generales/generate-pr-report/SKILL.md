@@ -1,6 +1,6 @@
 ---
 name: generate-pr-report
-description: Use esta skill para generar un reporte del issue en formato de descripción de Pull Request (GitHub) o Merge Request / Issue (GitLab) basándose en el diff de la rama actual contra la rama develop. La skill compara con el merge-base (diff three-dot) para evitar que el reporte incluya cambios de otras ramas mergeadas a develop cuando la rama está desactualizada, lee el archivo .gitlab/issue_templates/reporteTemplate.md para armar la estructura, completa las secciones correspondientes y omite el diff de código en bruto en la evidencia. Detecta variables de entorno nuevas (stack-aware: Next.js, LoopBack/Nest, Go, Vite) y las reporta como alerta de máxima prioridad al tope del reporte. El reporte final debe incluir tablas de cambios agrupadas por capa arquitectónica y notas de gaps o advertencias detectadas.
+description: Genera la descripción de PR/MR desde el diff contra develop usando three-dot diff y merge-base. Detecta env vars nuevas (Next.js, LoopBack, Nest, Go, Vite) con alertas críticas, agrupa cambios por capa arquitectónica y escribe a disco. Usar con "generar reporte de PR", "reporte de issue", "describir MR".
 ---
 
 # Generar Reporte de PR / MR desde Diff a Develop
@@ -11,9 +11,14 @@ Esta skill define los pasos que debe seguir el agente para analizar los cambios 
 - El usuario solicita reportar, documentar o generar la descripción del issue para GitLab sobre los cambios implementados en la rama.
 - Se requiere comparar la rama actual de funcionalidad contra la rama base `develop`.
 
+## Cuándo NO usar esta skill
+- **Generar checklist de pruebas para QA** → `generate-qa-checklist`
+- **Generar o actualizar CHANGELOG.md** → `generate-changelog`
+- **Code review técnico exhaustivo de la implementación** → `nextjs-code-review`
+
 ---
 
-## Instrucciones Paso a Paso
+## Metodología
 
 ### Paso 1: Analizar cambios con Git
 
@@ -67,6 +72,25 @@ Esta skill define los pasos que debe seguir el agente para analizar los cambios 
 ### Paso 1b: Detectar variables de entorno nuevas (stack-aware)
 
 Las variables de entorno nuevas son la alerta de máxima prioridad del reporte: si no se crean en los ambientes, los servicios no arrancan o los builds rompen. Detectalas sobre el **diff three-dot** del Paso 1.
+
+#### 1b-0. Extracción automatizada con `scripts/detect_env_vars.py` (Recomendado)
+
+Para automatizar por completo el escaneo stack-aware, la clasificación de criticidad, la detección de renames y el formateo de la tabla Markdown oficial, ejecutá el script de detección:
+
+```bash
+python scripts/detect_env_vars.py
+```
+*(O si la skill está instalada en tu harness o entorno global: `python ~/.gemini/config/skills/generate-pr-report/scripts/detect_env_vars.py`)*
+
+Opciones útiles del script:
+- `--base <rama>`: Define la rama base de comparación (por defecto `develop`, con fallback automático a `origin/develop` o `main`).
+- `--format json`: Emite los resultados como JSON estructurado en caso de ser consumido por herramientas o subagentes.
+- `--output <archivo>`: Guarda la sección Markdown generada directamente en un archivo.
+- `--diff-file <archivo>`: Permite pasar un diff previo o usar `-` para procesar diffs desde stdin (`git diff ... | python scripts/detect_env_vars.py --diff-file -`).
+
+El script entrega directamente la tabla Markdown lista para ser incluida en la sección **🚨 ACCIÓN REQUERIDA**.
+
+Si no cuentas con intérprete de Python en el entorno o necesitas validar manualmente los hallazgos, utiliza las siguientes pautas detalladas en los Pasos 1b-1 a 1b-3:
 
 #### 1b-1. Detecta el stack del repo (cómo se leen y configuran las env vars aquí)
 
@@ -223,11 +247,16 @@ Ejemplo de estructura de esta sección:
 
 ---
 
-### Paso 4: Generar el archivo del Reporte
+### Paso 4: Generar el archivo del Reporte (Direct-to-Disk)
 
-1. Escribe el reporte completo en un archivo markdown en la ruta indicada por el usuario, o por defecto en el directorio de trabajo actual como `reporte_issue.md`.
-2. Asegúrate de que el Markdown sea válido y renderice correctamente en GitLab (las tablas deben tener la fila de separación `|---|---|`).
-3. No incluyas el diff en bruto en ninguna sección del archivo.
+1. **Plantilla oficial**: Utilizar la estructura definida en [`templates/pr-report.template.md`](./templates/pr-report.template.md).
+2. **Destino del reporte**: Escribir el reporte completo en `.agents/reports/pr_<branch>.md` (o en la raíz como `reporte_issue.md`) usando `write_to_file`.
+3. **Markdown válido**: Asegurarse de que el Markdown sea válido y renderice correctamente en GitLab/GitHub (las tablas deben tener la fila de separación `|---|---|`).
+4. **Prohibido el diff en bruto**: No incluyas el diff en bruto en ninguna sección del archivo ni en la conversación.
+5. **Reporte Sintético en Chat**:
+   - Enlace/ruta al archivo generado (`.agents/reports/pr_<branch>.md`).
+   - Título propuesto del PR y resumen de alto nivel.
+   - Alerta destacada si se detectaron variables de entorno nuevas.
 
 ---
 
@@ -289,5 +318,32 @@ Ejemplo de estructura de esta sección:
 
 ## 🖥️ Entorno
 - **Stack**: ...
-- **Rama**: ...
 ```
+
+---
+
+## Reglas de lo que SÍ debe hacer
+
+- Comparar la rama siempre usando diff three-dot (`"$BASE"...HEAD`) contra el merge-base.
+- Seguir estrictamente la plantilla de reporte de issue o PR sin omitir secciones obligatorias.
+- Detectar y alertar con máxima prioridad cualquier variable de entorno nueva en la cabecera (usando `scripts/detect_env_vars.py`).
+- Agrupar los cambios lógicamente por capas arquitectónicas en tablas concisas.
+- Escribir el reporte directamente a disco por defecto en `.agents/reports/pr_<branch>.md` (o `reporte_issue.md`) con `write_to_file`.
+- Reportar en el chat únicamente un resumen de 5 líneas con el enlace al archivo generado y variables de entorno bloqueantes.
+
+## Reglas de lo que NO debe hacer
+
+- NO usar two-dot diff (`git diff <branch>`) sin justificación para evitar contaminar con cambios de otras ramas.
+- NO volcar código fuente en bruto ni diffs crudos dentro del reporte ni en el chat.
+- NO omitir variables de entorno requeridas para el arranque o deploy de servicios.
+- NO inventar justificaciones para cambios no sustentados en el diff.
+
+## Verificación
+
+- Comprobar que el archivo se persistió correctamente en `.agents/reports/pr_<branch>.md` (o `reporte_issue.md`).
+- Validar que las variables de entorno nuevas identificadas estén debidamente documentadas al tope como alerta de bloqueo.
+- Asegurar que no se haya filtrado código fuente en crudo dentro del reporte.
+
+## Al terminar
+
+Confirmar la persistencia del reporte en `.agents/reports/pr_<branch>.md`. Sugerir al usuario: **generate-qa-checklist** para generar la checklist de casos de prueba correspondiente a los flujos modificados en la rama.

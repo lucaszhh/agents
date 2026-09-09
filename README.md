@@ -64,7 +64,7 @@ npx skills add <repo>
 
 ### Frontend (`skills/front/`)
 
-- **`nextjs-architect`**: Planear arquitectura antes de codear.
+- **`nextjs-architect`**: Planear arquitectura antes de codear (escribe su entregable en `.agents/plans/<nombre>.md`).
 - **`nextjs-design-craft`**: Diseñar/rediseñar UI con craft.
 - **`nextjs-design-audit`**: QA visual sobre lo codeado.
 - **`nextjs-debug-flow`**: Debugging con root cause.
@@ -73,7 +73,7 @@ npx skills add <repo>
 
 ### Backend (`skills/back/`)
 
-- **`nestjs-architect`**: Diseñar la estructura de un módulo NestJS.
+- **`nestjs-architect`**: Diseñar la estructura de un módulo NestJS (escribe su entregable en `.agents/plans/<nombre>.md`).
 - **`nestjs-developer`**: Implementar controladores, servicios, DTOs.
 - **`nestjs-unit-tester`**: Escribir pruebas unitarias con Jest.
 
@@ -128,9 +128,10 @@ El repositorio implementa una estrategia de reducción de tokens y desacople de 
    - Bloquea volcados de archivos grandes mediante comandos `cat/tail/head` directos sin tuberías de filtrado (`grep`, `head -n 50`).
 
 2. **Protocolo de Escritura Directa a Disco (Direct-to-Disk Writing)**:
-   - Los subagentes generan artefactos repetitivos (pruebas Jest `*.spec.ts`, tokens compilados y checklists de QA) escribiendo directamente en disco (`write_to_file`).
-   - Prohibido volcar el código fuente completo en las respuestas conversacionales, evitando quemar miles de tokens de salida y saturación del contexto.
-   - Los subagentes solo reportan métricas sintéticas (rutas, cantidad de tests passing, signaturas, cobertura).
+   - Los planes de arquitectura (`nextjs-architect`, `nestjs-architect`) se escriben **directamente en disco** en `.agents/plans/<nombre>.md`. Prohibido volcar el plan en el hilo de chat; en su lugar, se reporta la ruta del archivo y un resumen sintético con las preguntas de negocio y gaps para validación humana.
+   - Los subagentes generan código y artefactos (código backend NestJS `*.controller.ts`/`*.service.ts`, pruebas Jest `*.spec.ts`, changelogs, tokens compilados y checklists de QA) escribiendo directamente en disco (`write_to_file` o `replace_file_content`).
+   - Prohibido volcar el código fuente completo, documentos de diseño o archivos extensos en las respuestas conversacionales, evitando quemar miles de tokens de salida y saturación del contexto.
+   - Los subagentes solo reportan métricas sintéticas (rutas de archivos, signaturas, cantidad de tests passing, cobertura o desglose de cambios).
 
 3. **Ingesta Sintética (< 150 líneas)**:
    - El rol `@explorer` actúa como un extractor sintetizado estricto, resumiendo contratos de Figma y backend en viñetas concisas dentro de `docs/context_*.md`.
@@ -147,10 +148,32 @@ Para sincronizar automáticamente todas las skills y workflows de este repositor
 
 ---
 
+## 🧪 Validación de Skills en CI
+
+El repositorio cuenta con una suite de validación automatizada que corre en CI (GitHub Actions) y de forma local:
+
+```bash
+pnpm install
+pnpm run lint:skills
+```
+
+El validador (`scripts/lint-skills.mjs`) comprueba:
+1. **Frontmatter YAML válido** con delimitadores `---` y propiedad `name` idéntica a la carpeta contenedora.
+2. **Presencia de las 6 secciones obligatorias**:
+   - `Cuándo usar`
+   - `Cuándo NO usar`
+   - `Metodología`
+   - `Reglas SÍ/NO` (`Reglas de lo que SÍ debe hacer` y `Reglas de lo que NO debe hacer`)
+   - `Verificación`
+   - `Al terminar`
+3. **Ausencia de comandos con two-dot diff sin justificación**: asegura el uso de three-dot diff (`git diff <base>...HEAD`) frente a branches base, o exige un comentario explícito (`# justificación: ...`).
+
+---
+
 ## 🧩 Ecosistema y Herramientas Complementarias
 
 Este repositorio forma parte de una arquitectura integral de ingeniería asistida por IA:
-- 🧰 [**lucaszarandon-agent-toolkit**](https://github.com/lucaszhh/lucaszarandon-agent-toolkit): Servidor MCP en TypeScript, skills de migración y tooling ejecutable.
+- 🧰 [**agent-toolkit**](https://github.com/lucaszhh/agent-toolkit): Servidor MCP en TypeScript, skills de migración y tooling ejecutable.
 - 🌐 [**Portfolio Web**](https://lucaszarandon.vercel.app): Portafolio y trayectoria profesional.
 
 ---

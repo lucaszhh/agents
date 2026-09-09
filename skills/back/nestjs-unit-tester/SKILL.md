@@ -23,6 +23,7 @@ Diseña, estructura e implementa pruebas unitarias (`*.spec.ts`) para controlado
 
 ## Cuándo NO usar esta skill
 
+- **Ajustes cosméticos o renombramientos sin nueva lógica** → no requiere alterar la suite de tests si las aserciones existentes siguen pasando en verde.
 - **Diseñar la arquitectura** → `nestjs-architect`
 - **Implementar código** → `nestjs-developer`
 - **Corregir bugs de producción** → buscar la causa directamente
@@ -37,19 +38,30 @@ Diseña, estructura e implementa pruebas unitarias (`*.spec.ts`) para controlado
 2. Importar `Test` y `TestingModule` de `@nestjs/testing`
 3. Definir mocks de todas las dependencias del constructor
 
-### Paso 2 — Configurar TestingModule
+### Paso 2 — Configurar TestingModule con Mocking Tipado
+
+Se recomienda fuertemente el uso de `jest-mock-extended` para evitar mocks planos frágiles ante cambios de interfaces:
 
 ```typescript
-const module: TestingModule = await Test.createTestingModule({
-    providers: [
-        MyService,
-        { provide: IMyRepository, useValue: mockRepository },
-    ],
-}).compile();
+import { Test, TestingModule } from '@nestjs/testing';
+import { mock, MockProxy } from 'jest-mock-extended';
 
-service = module.get<MyService>(MyService);
-repository = module.get(IMyRepository);
-jest.clearAllMocks();
+let service: MyService;
+let repository: MockProxy<IMyRepository>;
+
+beforeEach(async () => {
+  repository = mock<IMyRepository>();
+
+  const module: TestingModule = await Test.createTestingModule({
+    providers: [
+      MyService,
+      { provide: IMyRepository, useValue: repository },
+    ],
+  }).compile();
+
+  service = module.get<MyService>(MyService);
+  jest.clearAllMocks();
+});
 ```
 
 ### Paso 3 — Escribir tests con patrón AAA
@@ -130,25 +142,26 @@ it('should throw HttpException if service fails', async () => {
 ## Protocolo de Escritura Directa a Disco (Direct-to-Disk Writing)
 
 Para optimizar el consumo de tokens y no saturar la ventana de contexto:
-1. **Escribir directamente a disco**: Generar o editar el archivo `*.spec.ts` usando la herramienta de escritura de archivos (`write_to_file`).
+1. **Escribir directamente a disco**: Generar o editar el archivo `*.spec.ts` usando la herramienta de escritura de archivos (`write_to_file`) basándose en la plantilla oficial [`templates/unit-test.template.spec.ts`](./templates/unit-test.template.spec.ts).
 2. **Prohibido volcar el código completo en la conversación**: NO imprimir el código fuente de los tests en la respuesta del chat.
-3. **Formato obligatorio de reporte final**:
+3. **Formato obligatorio de reporte final en chat (Sintético)**:
    - **Archivo**: ruta relativa del `*.spec.ts` creado/modificado.
    - **Resumen de casos**: lista con viñetas de las signaturas de tests implementados (camino feliz y casos de fallo del patrón `Result`).
-   - **Resultado de ejecución**: estado de `npm test` o `jest` y porcentaje de cobertura.
+   - **Resultado de ejecución y Cobertura**: porcentaje de lines/statements/branches (umbral mínimo requerido: **$\ge 85\%$**).
 
 ---
 
 ## Reglas de lo que SÍ debe hacer
 
-- Escribir directamente el archivo `*.spec.ts` a disco (`write_to_file`)
+- Escribir directamente el archivo `*.spec.ts` a disco (`write_to_file`) siguiendo la plantilla oficial
 - Reportar únicamente signaturas y métricas de ejecución, sin volcar el código en el chat
 - Usar TestingModule aislado (no importar módulos reales)
 - Mockear todas las dependencias del constructor
 - Limpiar mocks con `jest.clearAllMocks()`
-- Probar tanto éxito como fracaso
+- Probar tanto éxito como fracaso (caminos `isSuccess` e `isFailure`)
 - Usar patrón AAA con comentarios estructurados
 - Verificar que los mocks se llaman con los argumentos correctos
+- Exigir un umbral de cobertura $\ge 85\%$ sobre el archivo testeado
 
 ## Reglas de lo que NO debe hacer
 
@@ -158,6 +171,16 @@ Para optimizar el consumo de tokens y no saturar la ventana de contexto:
 - NO probar solo el happy path
 - NO hacer tests que dependan de otros tests
 - NO usar `any` innecesariamente en mocks
+
+## Verificación
+
+- Ejecutar la suite de tests del archivo recién creado o modificado con cobertura quirúrgica focalizada:
+  ```bash
+  pnpm test -- <path-to-spec> --coverage --collectCoverageFrom="<path-to-source>"
+  ```
+  *Ejemplo: `pnpm test -- src/modules/demands/domain/services/demand.service.spec.ts --coverage --collectCoverageFrom="src/modules/demands/domain/services/demand.service.ts"`*
+- Comprobar que el 100% de las aserciones pasen sin fallos ni timeouts.
+- **Piso Estricto de Aceptación**: Validar que el reporte de cobertura alcance o supere el umbral mínimo del **85%** en branches y líneas como condición obligatoria de éxito.
 
 ## Al terminar
 

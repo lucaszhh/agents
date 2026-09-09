@@ -27,6 +27,7 @@ design-system/
 - `pnpm build:tokens` — compila los tokens a `tokens.css` + `tokens.json`
 - `pnpm build:react` — compila el package react (incluye typecheck)
 - `pnpm storybook` — http://localhost:6006
+- `pnpm test-storybook` — corre Storybook Test Runner (smoke/render visual + a11y axe-core)
 
 **Stack:** pnpm workspaces, Style Dictionary (tokens), Vite library (react/icons),
 Storybook (docs), MUI con theme propio y module augmentation en `types/`.

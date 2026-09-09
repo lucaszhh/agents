@@ -1,5 +1,5 @@
 ---
-name: nextjs-nextjs-debug-flow
+name: nextjs-debug-flow
 description: |
   Debugging sistemático en 4 fases: investigar, analizar, hipotetizar, implementar.
   Regla de hierro: no se aplica ningún fix sin identificar la causa raíz.
@@ -34,6 +34,7 @@ Debugging sistemático para encontrar y arreglar bugs. Cuatro fases secuenciales
 
 ## Cuándo NO usar esta skill
 
+- **Typo evidente o fix obvio de 1 línea** → Fast-Path: corregir directamente y verificar con `nextjs-code-review` sin ejecutar el ciclo forense de 4 fases.
 - **Error de diseño/visual** (espaciado, color, tipografía) → `nextjs-design-audit`
 - **Error de tipos o lint** → `nextjs-code-health`
 - **Revisar código sin bug concreto** → `nextjs-code-review`
@@ -42,7 +43,9 @@ Debugging sistemático para encontrar y arreglar bugs. Cuatro fases secuenciales
 
 ---
 
-## Fase 1 — INVESTIGAR
+## Metodología
+
+### Fase 1 — INVESTIGAR
 
 Recolectar toda la información antes de tocar código.
 
@@ -92,6 +95,18 @@ Trazar el flujo de datos para aislar dónde se rompe.
 - **Estados no manejados:** ¿el componente asume que los datos siempre vienen? ¿maneja `undefined`, `null`, array vacío?
 - **Efectos secundarios:** ¿un `useEffect` está disparando en el momento incorrecto?
 
+### Trazabilidad e Inspección de Caché (React Query)
+Cuando el bug involucre datos desactualizados, queries que no refrescan o mutaciones sin efecto:
+1. **Identificar la query key exacta**: localizar la definición en `src/modules/<dominio>/query/keys.ts`.
+2. **Volcado del estado de la query**:
+   ```typescript
+   // Inspeccionar estado en runtime o en spec de reproducción
+   console.log(queryClient.getQueryState(featureKeys.detail(id)));
+   console.log(queryClient.getQueryData(featureKeys.detail(id)));
+   ```
+   Verificar campos críticos: `status`, `fetchStatus`, `isStale`, `dataUpdatedAt`, y `error`.
+3. **Verificar invalidación**: Confirmar que las mutaciones ejecutan `await queryClient.invalidateQueries({ queryKey: ... })` y que los tags/keys coincidan en profundidad.
+
 ---
 
 ## Fase 3 — HIPOTETIZAR
@@ -110,7 +125,20 @@ Formular la causa raíz ANTES de tocar código.
 
 ---
 
-## Fase 4 — IMPLEMENTAR
+## Fase 3.5 — TEST DE REGRESIÓN OBLIGATORIO (TDD)
+
+**Regla estricta**: Antes de modificar cualquier línea de código productivo:
+1. Crear o actualizar un test unitario (`*.spec.ts`) o script mínimo de reproducción en scratchpad que reproduzca el error.
+2. Ejecutar el test con el runner del proyecto:
+   ```bash
+   pnpm test -- <path-al-spec>.spec.ts
+   ```
+3. Confirmar que el test **falla (en rojo)** verificando la hipótesis de la Fase 3.
+4. Solo entonces avanzar a la Fase 4. El fix se considerará completo únicamente cuando este test pase a verde.
+
+---
+
+## Fase 4 — IMPLEMENTAR Y REGISTRAR
 
 Fix mínimo, verificado, sin efectos colaterales.
 
@@ -118,18 +146,25 @@ Fix mínimo, verificado, sin efectos colaterales.
 
 1. **Fix mínimo** — arreglar solo lo necesario, no refactorizar de paso
 2. **Verificar el fix**:
-   - Reproducir el bug → ya no ocurre
+   - Ejecutar el test de regresión de la Fase 3.5 → ahora pasa a verde
+   - Reproducir manualmente → el bug ya no ocurre
    - Probar al menos 2 escenarios: happy path + edge case
 3. **Verificar no romper nada**:
    - Si el fix fue en un hook: revisar todos los componentes que lo consumen
    - Si el fix fue en un servicio: revisar todos los hooks que lo usan
    - Si el fix fue en un tipo: revisar todos los lugares donde se usa ese tipo
 4. **Buscar el mismo patrón** — si el bug fue por un error común, revisar si existe en otros hooks/servicios
+5. **Generar reporte Direct-to-Disk**:
+   - Utilizar la plantilla oficial [`templates/debug-report.template.md`](./templates/debug-report.template.md).
+   - Escribir el informe completo en `.agents/debug/<issue-kebab-case>-debug.md` (`write_to_file`).
+   - Reportar en el chat únicamente la hipótesis en una oración, archivos modificados y el status del test de regresión.
 
 ---
 
 ## Reglas de lo que SÍ debe hacer
 
+- Escribir el reporte completo en `.agents/debug/<issue-kebab-case>-debug.md` (`write_to_file`)
+- Escribir un test o caso de regresión reproducible que falle antes del fix
 - Reproducir el bug antes de tocar una sola línea de código
 - Trazar el flujo completo de datos (componente → hook → servicio → query key)
 - Verificar el fix con reproducción negativa (el bug ya no ocurre)
@@ -140,7 +175,9 @@ Fix mínimo, verificado, sin efectos colaterales.
 
 ## Reglas de lo que NO debe hacer
 
+- NO volcar el reporte extenso ni logs masivos en la respuesta de chat
 - NO aplicar un fix sin haber identificado la causa raíz
+- NO omitir el test de regresión previo al fix
 - NO hacer fixes "a ver si funciona" (trial and error)
 - NO modificar código que no está relacionado con el bug (refactors en otro commit)
 - NO ignorar la caché de React Query — es causa frecuente de bugs sutiles
@@ -153,12 +190,12 @@ Fix mínimo, verificado, sin efectos colaterales.
 
 ## Verificación
 
-- Bug reproducido en Fase 1
-- Causa raíz identificada en Fase 3
-- Fix aplicado en Fase 4
-- Bug ya no ocurre
-- No se rompió nada relacionado
+- Confirmar persistencia del reporte en `.agents/debug/<issue-kebab-case>-debug.md`.
+- Bug reproducido en Fase 1 y en test de regresión Fase 3.5.
+- Causa raíz identificada en Fase 3 en una sola oración.
+- Fix aplicado en Fase 4 y test de regresión pasando a verde.
+- Bug ya no ocurre y no se rompió nada relacionado.
 
 ## Al terminar
 
-Sugerir al usuario: **nextjs-code-review** para validar el fix con code review.
+Confirmar persistencia del reporte en `.agents/debug/<issue-kebab-case>-debug.md`. Sugerir al usuario: **nextjs-code-review** para validar el fix con code review.

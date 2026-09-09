@@ -7,7 +7,7 @@ react-hook-form, módulos por dominio, design system propio).
 
 | Skill | Para qué | Invocar con |
 |---|---|---|
-| `nextjs-architect` | Planear arquitectura antes de codear | "revisá la arquitectura", "planificá la feature" |
+| `nextjs-architect` | Planear arquitectura antes de codear (escribe en `.agents/plans/<nombre>.md`) | "revisá la arquitectura", "planificá la feature" |
 | `nextjs-design-craft` | Diseñar/rediseñar UI con craft | "diseñá este componente", "rediseñá la landing" |
 | `nextjs-design-audit` | QA visual sobre lo codeado | "auditá el diseño", "visual QA" |
 | `nextjs-debug-flow` | Debuggear con root cause | "debuggeá este error", "por qué falla" |

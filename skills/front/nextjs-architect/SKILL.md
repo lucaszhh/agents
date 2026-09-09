@@ -1,11 +1,6 @@
 ---
 name: nextjs-architect
-description: |
-  Revisión de arquitectura antes de implementar. Define estructura de carpetas,
-  data flow, servicios, hooks, tipos y estados de UI. Valida contra los patrones
-  del proyecto (React Query, zod, módulos por dominio). Usar con "revisá la
-  arquitectura", "planificá esta feature", "cómo estructuro X", "armame el plan",
-  antes de empezar cualquier feature que toque más de un módulo.
+description: Planificación arquitectónica frontend antes de codificar. Define data flow, matriz RSC (Server vs Client Components), servicios HTTP, hooks de React Query y schemas zod. Escribe directo a .agents/plans/<feature>.md. Usar con "revisá la arquitectura", "planificá esta feature", "cómo estructuro X", "armame el plan".
 ---
 
 # Revisión de Arquitectura
@@ -39,9 +34,9 @@ Si hay un módulo similar al que se va a crear, leerlo completo para replicar el
 
 ## Cuándo NO usar esta skill
 
-- **Cambio de 1 archivo o fix trivial** → `nextjs-code-review` directo
+- **Cambio menor (< 10 líneas, hotfix cosmético o fix trivial)** → Fast-Path: aplicar el cambio directo y usar `nextjs-code-review`. Prohibido redactar planes ceremoniales para tareas chicas.
 - **Cambio solo visual** → `nextjs-design-audit`
-- **Bug** → `nextjs-debug-flow`
+- **Bug funcional** → `nextjs-debug-flow`
 - **No sabés qué código existe** → usar `grep` o explorar `src/modules/` directamente
 - **Ya hay un plan y solo querés code review** → `nextjs-code-review`
 
@@ -61,6 +56,17 @@ Si hay un módulo similar al que se va a crear, leerlo completo para replicar el
 
 ### Fase 2 — Mapear los módulos afectados
 
+Ejecutar comandos concretos de inspección para evitar lecturas ciegas:
+```bash
+# Árbol de rutas y layouts de Next.js
+find src/app -name "page.tsx" -o -name "layout.tsx"
+# o si tree está instalado:
+tree src/app
+
+# Módulos y dominios existentes
+find src/modules -maxdepth 2 -type d
+```
+
 Responder:
 
 - ¿Qué módulos nuevos se crean?
@@ -70,8 +76,21 @@ Responder:
 - ¿Qué rutas nuevas o modificadas en `src/app/`?
 - ¿Qué tipos de TypeScript nuevos? (interfaces, tipos de request/response)
 
-### Fase 3 — Diseñar el data flow para cada feature
+### Fase 3 — Diseñar el data flow y matriz RSC para cada feature
 
+1. **Matriz Server Components vs Client Components (RSC)**:
+   Construir obligatoriamente la tabla de decisión RSC para cada componente/página nueva o modificada:
+
+   | Componente / Archivo | Tipo (RSC / "use client") | Justificación Técnica (Interactividad / Bundle size / SSR) |
+   |---|:---:|---|
+   | `src/app/[ruta]/page.tsx` | **Server Component** | Fetch inicial SSR, reduce bundle JS en cliente, optimiza SEO. |
+   | `src/modules/[mod]/components/[View]Container.tsx` | **Client Component** (`"use client"`) | Interactividad, estado (`useState`), hooks de React Query, forms. |
+   | `src/modules/[mod]/components/[Card]Display.tsx` | **Server Component** | Presentacional puro, sin hooks ni interactividad requerida. |
+
+   - Identificar qué partes del árbol requieren interactividad (`useState`, `useEffect`, `useQuery`, formularios) para marcar con `"use client"`.
+   - Mantener las páginas `src/app/**/page.tsx` como Server Components cuando sea posible para SSR y reducir bundle cliente.
+
+2. **Trazar Data Flow**:
 Para cada pantalla o funcionalidad, trazar:
 
 ```
@@ -108,23 +127,41 @@ Checklist de validación del plan:
 - [ ] ¿Se respetan los aliases del proyecto? (`@/`, `@desingSystem/`, `@env`)
 - [ ] ¿El plan no introduce librerías nuevas innecesarias?
 
-### Fase 5 — Entregar el plan
+### Fase 5 — Entregar el plan (.agents/plans/<nombre>.md)
 
-El plan debe incluir:
+#### Protocolo de Entrega Direct-to-Disk OBLIGATORIO
 
-1. **Módulos afectados:** lista de módulos y si son nuevos o modificados
-2. **Archivos a crear:** ruta completa de cada archivo nuevo
-3. **Archivos a modificar:** ruta completa de cada archivo existente
-4. **Servicios:** cada servicio con endpoint HTTP y tipo de retorno
-5. **Hooks:** cada hook con query key, tipo de query/mutation y servicio que consume
-6. **Tipos:** interfaces/types nuevos necesarios
-7. **Rutas:** nuevas rutas en `src/app/`
-8. **Estados de UI:** para cada pantalla: loading, empty, error, success, edge cases
+El entregable completo de arquitectura **NUNCA se responde ni se vuelca en el hilo de chat**. Debe persistirse directamente en disco utilizando la plantilla oficial:
+
+1. **Plantilla oficial**: Utilizar la estructura definida en [`templates/architecture-plan.template.md`](./templates/architecture-plan.template.md).
+2. **Destino del entregable**: Escribir el plan completo en `.agents/plans/<nombre>.md` (crear la carpeta `.agents/plans/` si no existe).
+   - `<nombre>` debe ser el nombre de la feature o módulo en formato `kebab-case` (ej. `.agents/plans/solicitudes-pago.md`, `.agents/plans/tramites-layout.md`).
+3. **Prohibido volcar el plan en el chat**: No imprimir el documento técnico completo, especificaciones extensas ni esquemas exhaustivos en la respuesta de la conversación para no saturar la ventana de contexto.
+4. **Contenido obligatorio del archivo `.agents/plans/<nombre>.md`**:
+   - **Objetivo y Contexto**: resumen de la feature/módulo y módulos afectados (nuevos vs modificados).
+   - **Archivos a crear y modificar**: rutas completas de cada archivo nuevo y existente.
+   - **Matriz RSC**: Server Components vs Client Components con justificación técnica.
+   - **Data Flow y Servicios**: endpoints HTTP, tipos de retorno y llamadas encapsuladas.
+   - **Hooks y React Query**: keys centralizadas en `query/keys.ts`, tipo de query/mutation y servicio que consume.
+   - **Tipos de TypeScript y Schemas Zod**: contratos, interfaces y validaciones.
+   - **Rutas y Layouts**: nuevas rutas en `src/app/` y consideraciones de layout/auth.
+   - **Estados de UI**: loading, empty, error, success, edge cases por pantalla.
+   - **Oportunidades de Mejora y Gaps Detectados**: análisis proactivo de inconsistencias o elementos omitidos en el requerimiento original.
+   - **Preguntas de Negocio**: dudas de alcance o trade-offs que requieren validación del usuario.
+
+5. **Respuesta en el hilo de chat (Reporte Sintético)**:
+   En el hilo de la conversación, el agente **únicamente** debe responder con un reporte sintético conciso:
+   - **Ruta del entregable**: enlace/ruta al archivo generado (`.agents/plans/<nombre>.md`).
+   - **Resumen ejecutivo**: síntesis breve (1-2 párrafos) de la estrategia arquitectónica y módulos afectados.
+   - **Preguntas de Negocio y Gaps**: lista de preguntas o puntos de decisión críticos para el usuario antes de iniciar la implementación.
+   - **Siguiente paso recomendado**: sugerir la siguiente skill (ej. `nextjs-design-craft` para UI o pasar a implementación siguiendo el plan tras la aprobación humana).
 
 ---
 
 ## Reglas de lo que SÍ debe hacer
 
+- Escribir obligatoriamente el plan completo en `.agents/plans/<nombre>.md` (`write_to_file`)
+- Reportar en el chat únicamente el resumen sintético, ruta del archivo y preguntas de negocio / gaps
 - Leer `AGENTS.md`, `README.md` y `package.json` antes de planificar
 - Proponer rutas de archivo concretas: `src/modules/<dominio>/services/<nombre>.ts`
 - Validar que el plan usa las dependencias que YA están en el proyecto
@@ -140,6 +177,8 @@ El plan debe incluir:
 
 ## Reglas de lo que NO debe hacer
 
+- NO volcar el plan técnico completo ni especificaciones largas en la respuesta del chat
+- NO omitir la escritura del entregable en `.agents/plans/<nombre>.md`
 - NO proponer lógica de negocio en `src/app/*` — siempre en `src/modules/*`
 - NO hacer fetch directo en componentes — siempre delegar a services
 - NO proponer imports directos de librerías de UI fuera del design system del proyecto
@@ -159,6 +198,8 @@ El plan debe incluir:
 
 El plan responde todas estas preguntas:
 
+- ¿Se escribió el archivo en `.agents/plans/<nombre>.md`?
+- ¿El chat contiene solo el reporte sintético con preguntas de negocio y gaps?
 - ¿Qué archivos se crean/modifican? (rutas completas)
 - ¿Qué servicios se necesitan? (endpoint, método HTTP, tipo de respuesta)
 - ¿Qué hooks? (useQuery/useMutation, query keys)
@@ -170,7 +211,7 @@ El plan responde todas estas preguntas:
 
 ## Al terminar
 
-Sugerir al usuario la siguiente skill según el contexto:
+Confirmar que el plan quedó guardado en `.agents/plans/<nombre>.md`. Reportar en el chat el resumen sintético y las preguntas de negocio pendientes de validación. Sugerir al usuario la siguiente skill según el contexto tras la aprobación del plan:
 
 - Si hay UI nueva para diseñar → **nextjs-design-craft**
 - Si hay que implementar directamente → empezar a codear siguiendo el plan

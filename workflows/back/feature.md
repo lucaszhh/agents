@@ -12,7 +12,7 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
 | Rol | Subagente | Modelo Sugerido | Herramientas | Modo |
 |---|---|---|---|---|
 | **Domain Scout** | `@explorer` | Gemini Flash / Haiku | read_file, codebase-memory / graphify | Solo lectura |
-| **Backend Architect** | `@architect` | Claude Sonnet / Gemini Pro | read_file, write_file (solo `docs/*.md`) | Planificación |
+| **Backend Architect** | `@architect` | Claude Sonnet / Gemini Pro | read_file, write_file (`.agents/plans/*.md`, `docs/*.md`) | Planificación |
 | **Backend Developer** | `@coder` | Claude Sonnet / Gemini Pro | read_file, write_file, edit_file, terminal | Implementación |
 | **Tester & QA** | `@reviewer` | Gemini Flash / Sonnet | read_file, write_file (`*.spec.ts`), terminal (`npm test`) | Testing & QA |
 
@@ -30,7 +30,7 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
                    ▼ (Claude Sonnet / Gemini Pro)
              📐 @architect (Backend Architect — nestjs-architect + Gaps Audit)
                    │
-                   │ 📄 Genera: docs/back_plan_<feature>.md (con Oportunidades y Gaps)
+                   │ 📄 Genera: .agents/plans/<feature>.md (con Oportunidades y Gaps)
                    ▼ ⏸️ [COMPUERTA 1: APROBACIÓN DE ARQUITECTURA Y GAPS]
                    │ (Claude Sonnet / Gemini Pro)
                    │
@@ -41,7 +41,7 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
                    │ 📄 Genera: *.spec.ts + Matriz de QA Checklist
                    ▼ ⏸️ [COMPUERTA 2: VALIDACIÓN DE TESTS Y QA]
                    │
-                   ▼ 🧹 Limpieza automática de temporales (docs/back_context_*, docs/back_plan_*, qa_checklist.md)
+                   ▼ 🧹 Limpieza automática de temporales (docs/back_context_*, .agents/plans/*, qa_checklist.md)
 ```
 
 ---
@@ -76,7 +76,7 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
   3. **Auditoría Proactiva de Cobertura y Gaps (OBLIGATORIO)**:
      - Detectar si el requerimiento omite endpoints CRUD naturales, validaciones de seguridad/roles, índices de base de datos o casos de error no contemplados en contratos de terceros.
      - Documentar explícitamente estas oportunidades de mejora para decisión del desarrollador.
-- **Salida**: Genera `docs/back_plan_<feature>.md` conteniendo obligatoriamente:
+- **Salida**: Genera directamente en disco `.agents/plans/<feature>.md` (sin volcar el diseño en el chat; en el chat reporta enlace, resumen sintético y preguntas/gaps) conteniendo obligatoriamente:
   - Diseño de capas e interfaces abstractas.
   - **Sección "Oportunidades de Mejora y Gaps Detectados"** (análisis de contratos adyacentes, índices y validaciones adicionales).
   - **Sección "Preguntas de Negocio"** (consultas de alcance y negocio).
@@ -84,13 +84,13 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
 ---
 
 ### 🛑 COMPUERTA 1: VALIDACIÓN HUMANA DE ARQUITECTURA Y GAPS
-> **Pausa obligatoria**: El desarrollador valida el diseño de capas, interfaces abstractas, responde las dudas de negocio y decide sobre las oportunidades/gaps antes de codificar.
+> **Pausa obligatoria**: El desarrollador valida el diseño de capas en `.agents/plans/<feature>.md`, interfaces abstractas, responde las dudas de negocio y decide sobre las oportunidades/gaps antes de codificar.
 
 ---
 
 ### Etapa 3: Implementación Backend y Migraciones (Direct-to-Disk Writing)
 - **Responsable**: `@coder` (Modelo implementador: Claude Sonnet / Gemini Pro)
-- **Entrada**: `docs/back_plan_<feature>.md` aprobado + decisiones de gaps y negocio.
+- **Entrada**: `.agents/plans/<feature>.md` aprobado + decisiones de gaps y negocio.
 - **Reglas mandatorias**:
   - **Patrón Result**: Los servicios de dominio devuelven `Result<T, E>` y no lanzan excepciones no controladas para errores de negocio.
   - **Controladores**: Mapean `Result` a HTTP usando `ErrorMapperToHttp`, inyectan `@CurrentUser()` e incluyen decoradores de trazabilidad `@TraceBreadcrumb`.
@@ -114,5 +114,5 @@ Pipeline estandarizado para el desarrollo de módulos backend en NestJS bajo los
   4. Ejecutar `nextjs-code-review` sobre el diff contra `develop`.
   5. Ejecutar `generate-qa-checklist` (escribe directo a disco `qa_checklist.md`).
   6. **Compuerta de Validación de Tests y QA**: Presentar al desarrollador el reporte sintético de ejecución de tests y la matriz de pruebas de QA, esperando su interacción.
-  7. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria todos los archivos temporales generados en el ciclo (`docs/back_context_<feature>.md`, `docs/back_plan_<feature>.md`, `qa_checklist.md`, logs transitorios) para dejar el árbol de Git (`git status`) 100% limpio.
+  7. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria todos los archivos temporales generados en el ciclo (`docs/back_context_<feature>.md`, `.agents/plans/<feature>.md`, `qa_checklist.md`, logs transitorios) para dejar el árbol de Git (`git status`) 100% limpio.
 - **Salida**: Tests unitarios passing (`*.spec.ts`), reporte sintético de verificación, matriz de pruebas de QA y workspace limpio de temporales.

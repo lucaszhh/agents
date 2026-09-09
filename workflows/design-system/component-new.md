@@ -30,7 +30,7 @@ Pipeline para diseñar, implementar y documentar un componente nuevo en `@design
                    ▼ (Claude Sonnet / Gemini Pro)
              📐 @architect (Craft Architect — nextjs-design-craft + Gaps Audit)
                    │
-                   │ 📄 Genera: docs/ds_plan_<component>.md (con Oportunidades y Gaps)
+                   │ 📄 Genera: .agents/plans/<component>.md (con Oportunidades y Gaps)
                    ▼ ⏸️ [COMPUERTA 1: APROBACIÓN DE API CONTRACT Y GAPS]
                    │ (Claude Sonnet / Gemini Pro)
              💻 @coder (DS Implementer)
@@ -42,7 +42,7 @@ Pipeline para diseñar, implementar y documentar un componente nuevo en `@design
                    │ 📄 Genera: Checklist QA + Storybook + a11y
                    ▼ ⏸️ [COMPUERTA 2: VALIDACIÓN DE QA Y ACCESIBILIDAD]
                    │
-                   ▼ 🧹 Limpieza automática de temporales (docs/ds_new_*, docs/ds_plan_*)
+                   ▼ 🧹 Limpieza automática de temporales (docs/ds_new_*, .agents/plans/*)
 ```
 
 ---
@@ -67,7 +67,7 @@ Pipeline para diseñar, implementar y documentar un componente nuevo en `@design
   4. **Auditoría Proactiva de Cobertura y Gaps (OBLIGATORIO)**:
      - Detectar si faltan estados interactivos esenciales (`loading`, `error`, `focus-visible`, `read-only`), variantes de color faltantes respecto a la paleta global o props de accesibilidad (`aria-label`, `role`).
      - Documentar estas propuestas de mejora en el plan.
-- **Salida**: Genera `docs/ds_plan_<component>.md` conteniendo obligatoriamente:
+- **Salida**: Genera directamente en disco `.agents/plans/<component>.md` (sin volcar el plan en el chat; en el chat reporta enlace, resumen sintético y preguntas/gaps) conteniendo obligatoriamente:
   - Definición de API del componente y stories.
   - **Sección "Oportunidades de Mejora y Gaps Detectados"** (estados o variantes ausentes en el diseño original).
   - **Sección "Preguntas de Negocio / Craft"**.
@@ -75,7 +75,7 @@ Pipeline para diseñar, implementar y documentar un componente nuevo en `@design
 ---
 
 ### 🛑 COMPUERTA 1: VALIDACIÓN HUMANA DE API Y GAPS
-> **Pausa obligatoria**: Revisión de la API de props, decisiones sobre variantes/gaps y aprobación del desarrollador antes de codear.
+> **Pausa obligatoria**: Revisión de la API de props en `.agents/plans/<component>.md`, decisiones sobre variantes/gaps y aprobación del desarrollador antes de codear.
 
 ---
 
@@ -95,8 +95,8 @@ Pipeline para diseñar, implementar y documentar un componente nuevo en `@design
 - **Skill a invocar**: **`component-qa`** + **`nextjs-code-review`**
 - **Acciones**:
   1. Ejecutar `pnpm build:react` y asegurar compilación limpia.
-  2. Verificar estándares a11y (ARIA, contraste, navegación por teclado, focus rings).
+  2. Ejecutar Storybook Test Runner (`pnpm test-storybook`) para validar render visual y tests automatizados de accesibilidad (`axe-core`), verificando estándares a11y (ARIA, contraste, navegación por teclado, focus rings).
   3. Ejecutar `nextjs-code-review` sobre el diff.
-  4. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de QA del componente, verificación de accesibilidad y cobertura de Storybook, esperando su interacción.
-  5. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria los archivos temporales (`docs/ds_new_<component>_spec.md`, `docs/ds_plan_<component>.md`, reportes locales) para mantener el repositorio 100% limpio.
+  4. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de QA del componente, verificación de accesibilidad (axe/manual) y cobertura de Storybook / Test Runner, esperando su interacción.
+  5. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria los archivos temporales (`docs/ds_new_<component>_spec.md`, `.agents/plans/<component>.md`, reportes locales) para mantener el repositorio 100% limpio.
 - **Salida**: Componente validado, Storybook verificado, reporte sintético y workspace limpio de temporales.

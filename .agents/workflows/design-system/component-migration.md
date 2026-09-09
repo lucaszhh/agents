@@ -12,7 +12,7 @@ Pipeline estandarizado para portar componentes desde el frontend legacy (`fronte
 | Rol | Subagente | Modelo Sugerido | Herramientas | Modo |
 |---|---|---|---|---|
 | **Legacy Scout** | `@explorer` | Gemini Flash / Haiku | read_file, codebase-memory | Solo lectura |
-| **Theme Architect** | `@architect` | Claude Sonnet / Gemini Pro | read_file, write_file (solo `docs/*.md`) | Planificación |
+| **Theme Architect** | `@architect` | Claude Sonnet / Gemini Pro | read_file, write_file (`.agents/components/*.md`, `docs/*.md`) | Planificación |
 | **DS Implementer** | `@coder` | Claude Sonnet / Gemini Pro | read_file, write_file, edit_file, terminal | Implementación |
 | **Component QA** | `@reviewer` | Gemini Flash / Sonnet | read_file, terminal (`pnpm build:react`), edit | Auditoría y QA |
 
@@ -104,8 +104,8 @@ Pipeline estandarizado para portar componentes desde el frontend legacy (`fronte
 - **Skill a invocar**: **`component-qa`** + **`nextjs-code-review`**
 - **Acciones**:
   1. Ejecutar `pnpm build:react` en `design-system/` para garantizar compilación y tipos limpios.
-  2. Auditar checklist de `component-qa`: uso estricto de tokens, a11y (labels, contrast, focus rings), cobertura de variantes.
+  2. Auditar checklist de `component-qa`: ejecutar Storybook Test Runner (`pnpm test-storybook`) para validar render visual y tests automatizados de a11y (`axe-core`), uso estricto de tokens y cobertura de variantes.
   3. Ejecutar `nextjs-code-review` sobre el diff pre-merge para verificar paridad funcional con el componente legacy.
-  4. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de QA, estado de Storybook y paridad de props, esperando su interacción.
+  4. **Compuerta de Validación de QA**: Presentar al desarrollador el reporte sintético de QA, estado de Storybook / Test Runner y paridad de props, esperando su interacción.
   5. **Limpieza estricta de temporales**: Al concluir la verificación y presentar el reporte, eliminar de forma obligatoria los archivos temporales (`docs/ds_migration_<component>.md`, `docs/ds_plan_<component>.md`, reportes locales) para mantener el repositorio 100% limpio.
 - **Salida**: Componente migrado, build exitoso, reporte sintético de paridad y workspace limpio de temporales.

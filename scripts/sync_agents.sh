@@ -7,8 +7,12 @@ GLOBAL_SKILLS_DIR="${HOME}/.gemini/config/skills"
 
 echo "🔄 Sincronizando repositorio agents..."
 
-# 1. Asegurar permisos de ejecución en scripts de hooks
-chmod +x "${REPO_ROOT}/.agents/scripts/shunt_guard.py"
+# 1. Asegurar permisos de ejecución en scripts de hooks y herramientas
+chmod +x "${REPO_ROOT}/.agents/scripts/shunt_guard.py" 2>/dev/null || true
+[ -f "${REPO_ROOT}/scripts/detect_env_vars.py" ] && chmod +x "${REPO_ROOT}/scripts/detect_env_vars.py"
+[ -f "${REPO_ROOT}/skills/generales/generate-pr-report/scripts/detect_env_vars.py" ] && chmod +x "${REPO_ROOT}/skills/generales/generate-pr-report/scripts/detect_env_vars.py"
+[ -f "${REPO_ROOT}/scripts/scaffold_module.sh" ] && chmod +x "${REPO_ROOT}/scripts/scaffold_module.sh"
+[ -f "${REPO_ROOT}/skills/back/nestjs-architect/scripts/scaffold_module.sh" ] && chmod +x "${REPO_ROOT}/skills/back/nestjs-architect/scripts/scaffold_module.sh"
 
 # 2. Sincronizar workflows a .agents/workflows
 mkdir -p "${REPO_ROOT}/.agents/workflows"
@@ -24,11 +28,18 @@ sync_skill() {
   local dest_dir="${GLOBAL_SKILLS_DIR}/${skill_name}"
   local dest_file="${dest_dir}/SKILL.md"
   mkdir -p "${dest_dir}"
-  if [[ -f "${dest_file}" ]] && [[ "${skill_file}" -ef "${dest_file}" ]]; then
-    # Mismo archivo / hard link, ya está actualizado
-    return 0
+  if ! ([[ -f "${dest_file}" ]] && [[ "${skill_file}" -ef "${dest_file}" ]]); then
+    cp --remove-destination "${skill_file}" "${dest_file}"
   fi
-  cp --remove-destination "${skill_file}" "${dest_file}"
+  local skill_src_dir="$(dirname "${skill_file}")"
+  if [[ -d "${skill_src_dir}/scripts" ]]; then
+    mkdir -p "${dest_dir}/scripts"
+    cp -r "${skill_src_dir}/scripts/"* "${dest_dir}/scripts/"
+  fi
+  if [[ -d "${skill_src_dir}/templates" ]]; then
+    mkdir -p "${dest_dir}/templates"
+    cp -r "${skill_src_dir}/templates/"* "${dest_dir}/templates/"
+  fi
 }
 
 # Skills de frontend

@@ -6,7 +6,7 @@ Skills para el desarrollo backend (NestJS, Clean Architecture / DDD, X-Road).
 
 | Skill | Para qué | Invocar con |
 |---|---|---|
-| `nestjs-architect` | Diseñar la estructura de un módulo | "creá un módulo", "diseñá la arquitectura" |
+| `nestjs-architect` | Diseñar la estructura de un módulo (escribe en `.agents/plans/<nombre>.md`) | "creá un módulo", "diseñá la arquitectura" |
 | `nestjs-developer` | Implementar controladores, servicios, DTOs | "implementá el endpoint", "creá el servicio" |
 | `nestjs-unit-tester` | Escribir pruebas unitarias | "escribí tests", "testear esta feature" |
 

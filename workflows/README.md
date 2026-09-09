@@ -33,7 +33,7 @@ El pipeline divide el trabajo según la complejidad cognitiva de cada tarea para
 Para mantener el control y evitar alucinaciones, la información viaja entre etapas mediante archivos Markdown estructurados:
 
 1. `docs/context_<feature>.md`: Resumen técnico generado por `@explorer` a partir de Figma y contratos de backend (**estricto < 150 líneas**, estilo *bulk-reader*).
-2. `docs/plan_<feature>.md`: Plan técnico y preguntas de negocio generado por `@architect`.
+2. `.agents/plans/<feature>.md`: Plan técnico y preguntas de negocio generado por `@architect` (escritura directa a disco, sin volcar el plan en el chat).
 3. **Pausa de validación**: El desarrollador responde las dudas y aprueba el plan.
 4. Código en `src/modules/<dominio>/` o `packages/react/`: Implementación realizada por `@coder`.
 5. `qa_checklist.md`: Matriz de pruebas y regresión generada por `@reviewer` para el equipo de QA.
@@ -57,12 +57,13 @@ Para evitar el desperdicio de tokens en modelos de frontera (Sonnet / Pro) por t
    - `@explorer` extrae variables de Figma MCP o Swagger y **debe resumir el contexto en viñetas concisas**, sin saludos ni prosa.
    - El artefacto `docs/context_*.md` no puede superar las **150 líneas**. El arquitecto nunca inhala árboles JSON masivos de Figma.
 
-3. **Escritura Directa a Disco (`code-writer` / `@reviewer` & `@coder`)**:
-   - La generación de código repetitivo (pruebas unitarias `*.spec.ts`, tokens de diseño y checklists) se escribe **directamente en el disco** con `write_to_file`.
-   - **Prohibido volcar el código fuente completo en el chat**: el subagente solo reporta la ruta del archivo generado, métricas de ejecución (tests passing, tablas alteradas) y signaturas clave.
+3. **Escritura Directa a Disco (`code-writer` / `@architect`, `@reviewer` & `@coder`)**:
+   - Los planes de arquitectura (`nextjs-architect`, `nestjs-architect`) se escriben **directamente en disco** en `.agents/plans/<nombre>.md` sin volcar el documento completo en el chat.
+   - La generación o edición de artefactos (código backend NestJS, pruebas unitarias `*.spec.ts`, changelogs, tokens de diseño y checklists) se escribe **directamente en el disco** con `write_to_file` o `replace_file_content`.
+   - **Prohibido volcar el código fuente completo o especificaciones de diseño en el chat**: el subagente solo reporta la ruta del archivo generado/modificado, métricas de ejecución (tests passing, tablas alteradas, desglose de cambios), signaturas clave y preguntas de negocio pendientes.
 
 4. **Limpieza Estricta de Temporales**:
-   - Al finalizar el ciclo y validar con QA, todos los artefactos de handoff intermedios (`docs/context_*`, `docs/plan_*`) se eliminan obligatoriamente para mantener el árbol de Git limpio.
+   - Al finalizar el ciclo y validar con QA, todos los artefactos de handoff intermedios (`docs/context_*`, `.agents/plans/*`, `qa_checklist.md`) se eliminan obligatoriamente para mantener el árbol de Git limpio.
 
 ---
 

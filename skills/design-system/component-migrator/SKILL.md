@@ -1,12 +1,6 @@
 ---
 name: component-migrator
-description: |
-  Migrar un componente del design system legacy (frontend-nextjs) al monorepo
-  de design-system. Lee la implementación original, la adapta a MUI sobre el
-  theme propio, crea el barrel export y la story. Usar con "migrá este
-  componente", "extraé X al design system", "traé el Button al DS", "mover
-  componente legacy", cuando hay que portar componentes del módulo desingSystem
-  al package @design-system/react.
+description: Migra componentes del frontend legacy al monorepo @design-system/react. Adapta a MUI, configura theme augmentation, barrel export y story en Storybook. Escribe directo a disco. Usar con "migrá este componente", "extraé X al design system", "traé el Button al DS", "mover componente legacy".
 ---
 
 # Extracción de Componentes al Design System
@@ -77,19 +71,35 @@ exporta desde el barrel y tiene su story en `apps/docs/src/stories/`.
 5. Crear la story en `apps/docs/src/stories/<Nombre>.stories.tsx` cubriendo
    todas las variantes y estados del componente legacy
 
-### Fase 4 — Verificar
+### Fase 4 — Verificar y Documentar (Direct-to-Disk)
 
-1. `pnpm build:react` — compila sin errores (incluye typecheck)
-2. `pnpm storybook` — la story renderiza todas las variantes
-3. Comparar contra el componente legacy: ¿tiene todo lo que el original tenía?
-4. Si algo del theme faltaba y se agregó: verificar que no rompe otros componentes
+1. `pnpm build:react` — compila sin errores (incluye typecheck).
+2. **Validación Determinista de Barrel Export**:
+   Comprobar que el componente y sus types se reexportan correctamente desde `packages/react/src/index.ts`:
+   ```bash
+   grep -En "from ['\"]\./components/<Nombre>['\"]" packages/react/src/index.ts
+   # O verificar en paquete compilado:
+   node -e 'const ds = require("./packages/react"); if (!ds.<Nombre>) { console.error("Falta export"); process.exit(1); } console.log("✓ Barrel export confirmado");'
+   ```
+3. **Checklist de Regresión Visual (Storybook Test Runner)**:
+   Contrastar el render visual y props computadas con la story:
+   ```bash
+   pnpm test-storybook --stories="**/<Nombre>.stories.*"
+   ```
+   Validar que paddings, fuentes y colores coincidan exactamente con la especificación y no haya regresiones respecto al legacy.
+4. **Especificación Direct-to-Disk**:
+   - Utilizar la plantilla oficial [`templates/component-migration.template.md`](./templates/component-migration.template.md).
+   - Guardar el documento en `.agents/components/<Componente>-migration.md` (`write_to_file`).
+   - Reportar en el chat únicamente el resumen sintético (archivos creados, variantes cubiertas y enlace a la especificación).
 
 ---
 
 ## Reglas de lo que SÍ debe hacer
 
+- Guardar la especificación de migración en `.agents/components/<Componente>-migration.md` (`write_to_file`)
+- Reportar en el chat únicamente el resumen sintético sin volcar código fuente
 - Replicar la API pública del componente legacy (props iguales o mejor tipadas)
-- Escribir directamente a disco (`write_to_file`) el componente, types y la story sin volcar el código fuente completo en la conversación
+- Escribir directamente a disco (`write_to_file`) el componente, types y la story
 - Usar los tokens y el theme del DS — nunca hex/px hardcodeados
 - Crear story con todas las variantes y estados (default, hover, disabled, etc.)
 - Correr `pnpm build:react` antes de dar por terminado
@@ -99,6 +109,7 @@ exporta desde el barrel y tiene su story en `apps/docs/src/stories/`.
 ## Reglas de lo que NO debe hacer
 
 - NO volcar archivos de código completos de componentes o stories en la respuesta de chat
+- NO omitir la persistencia de la especificación en `.agents/components/<Componente>-migration.md`
 - NO migrar lógica de negocio (turns, procedures, users, queries) al DS
 - NO importar de `frontend-nextjs` desde el package react
 - NO hardcodear colores, radios o spacing — usar tokens
@@ -111,14 +122,16 @@ exporta desde el barrel y tiene su story en `apps/docs/src/stories/`.
 
 ## Verificación
 
-- `pnpm build:react` OK
-- Story renderiza todas las variantes del legacy
-- Sin imports de negocio ni del frontend legacy
-- Sin valores hardcodeados que deberían ser tokens
-- API pública equivalente al original
+- Confirmar persistencia de la especificación en `.agents/components/<Componente>-migration.md`.
+- `pnpm build:react` compila con éxito.
+- Story renderiza todas las variantes del legacy en Storybook.
+- El componente se exporta correctamente desde `packages/react/src/index.ts`.
+- Sin imports de negocio ni del frontend legacy.
+- Sin valores hardcodeados que deberían ser tokens.
+- API pública equivalente o mejorada respecto al original.
 
 ## Al terminar
 
-Sugerir al usuario: **component-qa** para auditar el componente migrado
+Confirmar persistencia de la especificación en `.agents/components/<Componente>-migration.md`. Sugerir al usuario: **component-qa** para auditar el componente migrado
 (calidad, variantes cubiertas, a11y, comparación con Figma).
 Después de QA, la cadena continúa con **nextjs-code-review** sobre el diff.
